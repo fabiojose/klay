@@ -1,4 +1,9 @@
-# Run Streams
+# Klay
+
+Play with Apache Kafka®.
+
+- run Kafka Streams with steps written in Groovy
+- start Apache Kafka® server
 
 Run Kafka Streams applications with the easiness and flexibility of Groovy scripting.
 

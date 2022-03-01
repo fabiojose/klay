@@ -1,11 +1,36 @@
 # Klay
 
-Play with Apache Kafka®.
+Play with Apache Kafka®. Good to proof-of-concepts or labs.
 
 - run Kafka Streams with steps written in Groovy
 - start Apache Kafka® server
 
+## Kafka Streams
+
 Run Kafka Streams applications with the easiness and flexibility of Groovy scripting.
+
+Default imports:
+
+TODO
+
+> But you can import any class available in the classpath
+
+Available objects:
+
+- `builder`
+- `stream`
+
+The script must return an instance of KStream. Example:
+
+```groovy
+// TODO:
+
+```
+
+Default Serdes:
+
+- key: String
+- value: JsonSerde
 
 ## Running the application in dev mode
 

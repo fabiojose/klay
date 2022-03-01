@@ -15,8 +15,7 @@ import picocli.CommandLine.Command;
 public final class Klay {
 
   public static void main(String[] args) {
-    new CommandLine(Klay.class).execute(args);
-    //Quarkus.run(args);
+    System.exit( new CommandLine(Klay.class).execute(args) );
   }
 
 }

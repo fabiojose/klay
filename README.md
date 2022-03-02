@@ -11,7 +11,9 @@ Run Kafka Streams applications with the easiness and flexibility of Groovy scrip
 
 Default imports:
 
-TODO
+- `org.apache.kafka.streams.*`
+- `org.apache.kafka.streams.kstream.*`
+- `org.apache.kafka.streams.state.*`
 
 > But you can import any class available in the classpath
 

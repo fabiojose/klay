@@ -5,6 +5,8 @@ import groovy.lang.GroovyShell;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class TopologyBuilder {
   private File file;
 
   @SuppressWarnings("rawtypes")
-  private KStream executeGroovyScript(
+  private Optional<KStream> executeGroovyScript(
     final StreamsBuilder builder,
     final KStream<?, ?> stream,
     final File file
@@ -41,7 +43,8 @@ public class TopologyBuilder {
     final var imports = new ImportCustomizer();
     imports.addStarImports(
       "org.apache.kafka.streams",
-      "org.apache.kafka.streams.kstream"
+      "org.apache.kafka.streams.kstream",
+      "org.apache.kafka.streams.state"
     );
 
     final var config = new CompilerConfiguration();
@@ -57,17 +60,21 @@ public class TopologyBuilder {
       final var script = groovy.parse(file);
       final var result = script.run();
 
-      if (!NO_VALUE.equals(to) && result instanceof KStream) {
-        return (KStream) result;
-      } else {
-        log.warn("The groovy script return is invalid: {}", result);
-        throw new IllegalStateException(
-          "Your script must return an instance of KStream, not " + result
-        );
+      if (!NO_VALUE.equals(to)) {
+        if (result instanceof KStream) {
+          return Optional.of((KStream) result);
+        } else {
+          log.warn("The groovy script return is invalid: {}", result);
+          throw new IllegalStateException(
+            "Your script must return an instance of KStream, not " + result
+          );
+        }
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+
+    return Optional.empty();
   }
 
   @Produces
@@ -77,11 +84,7 @@ public class TopologyBuilder {
 
     final var resultStream = executeGroovyScript(builder, stream, file);
 
-    if (!NO_VALUE.equals(to)) {
-      resultStream.to(to);
-    } else {
-      log.info("Stream has no sink topic");
-    }
+    resultStream.ifPresent(ks -> ks.to(to));
 
     return builder.build();
   }

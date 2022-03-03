@@ -1,13 +1,11 @@
 package com.github.fabiojose.klay.streams;
 
+import com.github.fabiojose.klay.util.Utils;
 import io.quarkus.runtime.Quarkus;
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.github.fabiojose.klay.util.Utils;
-
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Model.CommandSpec;
@@ -70,8 +68,7 @@ public class StreamsCommand implements Runnable {
     names = { "--server-port" },
     paramLabel = "PORT",
     description = {
-      "Port to bind the Rest API Server.",
-      "Default value will be dynamic"
+      "Port to bind the Rest API Server.", "Default value will be dynamic",
     },
     required = false
   )
@@ -93,7 +90,10 @@ public class StreamsCommand implements Runnable {
     //TODO: quarkus.kafka-streams.application-server
 
     //TODO: Bootstrap servers
-    System.setProperty("quarkus.kafka-streams.bootstrap-servers", bootstrapServers);
+    System.setProperty(
+      "quarkus.kafka-streams.bootstrap-servers",
+      bootstrapServers
+    );
 
     //TODO: Application ID
     System.setProperty("quarkus.kafka-streams.application-id", applicationId);
@@ -113,8 +113,10 @@ public class StreamsCommand implements Runnable {
     System.setProperty("klay.stream.script", script.getAbsolutePath());
 
     //TODO: Rest API server port
-    System.setProperty("quarkus.http.port", String.valueOf(serverPort.orElseGet(() -> Utils.freeTCPPort())));
-
+    System.setProperty(
+      "quarkus.http.port",
+      String.valueOf(serverPort.orElseGet(() -> Utils.freeTCPPort()))
+    );
     //quarkus.kafka-streams.application-server=
   }
 

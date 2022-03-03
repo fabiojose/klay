@@ -9,17 +9,18 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
-@Slf4j
 @ApplicationScoped
 public class TopologyBuilder {
+
+  private static final Logger log = Logger.getLogger(TopologyBuilder.class);
 
   private static final String NO_VALUE = "##__NO-VALUE__##";
   private static final String STREAM_PROPERTY = "stream";
@@ -64,7 +65,7 @@ public class TopologyBuilder {
         if (result instanceof KStream) {
           return Optional.of((KStream) result);
         } else {
-          log.warn("The groovy script return is invalid: {}", result);
+          log.warnf("The groovy script return is invalid: {}", result);
           throw new IllegalStateException(
             "Your script must return an instance of KStream, not " + result
           );

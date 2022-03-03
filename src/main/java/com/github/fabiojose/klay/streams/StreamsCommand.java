@@ -5,6 +5,9 @@ import java.io.File;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import com.github.fabiojose.klay.util.Utils;
+
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Model.CommandSpec;
@@ -63,6 +66,17 @@ public class StreamsCommand implements Runnable {
   )
   private String applicationId;
 
+  @Option(
+    names = { "--server-port" },
+    paramLabel = "PORT",
+    description = {
+      "Port to bind the Rest API Server.",
+      "Default value will be dynamic"
+    },
+    required = false
+  )
+  private Optional<Integer> serverPort;
+
   @Spec
   private CommandSpec spec;
 
@@ -97,6 +111,11 @@ public class StreamsCommand implements Runnable {
     System.setProperty("klay.stream.from.topic", from);
     to.ifPresent(topic -> System.setProperty("klay.stream.to.topic", topic));
     System.setProperty("klay.stream.script", script.getAbsolutePath());
+
+    //TODO: Rest API server port
+    System.setProperty("quarkus.http.port", String.valueOf(serverPort.orElseGet(() -> Utils.freeTCPPort())));
+
+    //quarkus.kafka-streams.application-server=
   }
 
   @Override

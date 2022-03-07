@@ -9,6 +9,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import com.github.fabiojose.klay.streams.TopologyBuilder;
+
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -18,7 +21,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 public class StreamsStoresResource {
 
   @Inject
-  KafkaStreams streams;
+  TopologyBuilder streams;
 
   @GET
   @Path("/{storeName}/keys/{key}")
@@ -28,7 +31,7 @@ public class StreamsStoresResource {
     @PathParam("key") String key
   ) {
 
-    final var store = streams.store(
+    final var store = streams.getStreams().store(
       StoreQueryParameters.fromNameAndType(
         storeName,
         QueryableStoreTypes.keyValueStore()

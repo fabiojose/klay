@@ -20,7 +20,7 @@ public class StreamsCommand implements Runnable {
 
   @Parameters(
     paramLabel = "FILE",
-    description = "Groovy file with Kafka Streams processing steps."
+    description = "Groovy script file with Kafka Streams processing steps."
   )
   private File script;
 
@@ -74,6 +74,14 @@ public class StreamsCommand implements Runnable {
   )
   private Optional<Integer> serverPort;
 
+  @Option(
+    names = {"--live"},
+    description = "Live reload the Groovy script file.",
+    defaultValue = "false",
+    required = false
+  )
+  private Boolean liveReload;
+
   @Spec
   private CommandSpec spec;
 
@@ -83,22 +91,18 @@ public class StreamsCommand implements Runnable {
   }
 
   private void configure() {
-    //TODO: Configure the Quarkus Kafka Streams properties
 
     System.setProperty("quarkus.kafka-streams.topics", from);
 
-    //TODO: quarkus.kafka-streams.application-server
-
-    //TODO: Bootstrap servers
+    // Bootstrap servers
     System.setProperty(
-      "quarkus.kafka-streams.bootstrap-servers",
+      "kafka-streams.bootstrap.servers",
       bootstrapServers
     );
 
-    //TODO: Application ID
-    System.setProperty("quarkus.kafka-streams.application-id", applicationId);
+    // Application ID
+    System.setProperty("kafka-streams.application.id", applicationId);
 
-    //TODO: Properties
     Optional
       .ofNullable(properties)
       .map(Map::entrySet)
@@ -107,17 +111,18 @@ public class StreamsCommand implements Runnable {
       .map(kv -> Map.entry(PROPERTY_PREFIX + kv.getKey(), kv.getValue()))
       .forEach(p -> System.setProperty(p.getKey(), p.getValue()));
 
-    //TODO: Configure properties: from, to and file
+    // Configure properties: from, to and file
     System.setProperty("klay.stream.from.topic", from);
     to.ifPresent(topic -> System.setProperty("klay.stream.to.topic", topic));
     System.setProperty("klay.stream.script", script.getAbsolutePath());
 
-    //TODO: Rest API server port
+    // Rest API server port
     System.setProperty(
       "quarkus.http.port",
       String.valueOf(serverPort.orElseGet(() -> Utils.freeTCPPort()))
     );
-    //quarkus.kafka-streams.application-server=
+
+    System.setProperty("klay.stream.live", String.valueOf(liveReload));
   }
 
   @Override

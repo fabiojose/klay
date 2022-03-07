@@ -2,6 +2,8 @@ package com.github.fabiojose.klay.rest;
 
 import com.github.fabiojose.klay.rest.model.KeyMetadata;
 import com.github.fabiojose.klay.rest.model.StreamMetadata;
+import com.github.fabiojose.klay.streams.TopologyBuilder;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
@@ -23,13 +25,13 @@ import org.apache.kafka.streams.KeyQueryMetadata;
 public class StreamsMetadataResource {
 
   @Inject
-  KafkaStreams streams;
+  TopologyBuilder streams;
 
   @GET
   @Path("/all")
   @Produces(MediaType.APPLICATION_JSON)
   public Set<StreamMetadata> all() {
-    return streams
+    return streams.getStreams()
       .metadataForAllStreamsClients()
       .stream()
       .map(StreamMetadata::of)
@@ -50,7 +52,7 @@ public class StreamsMetadataResource {
   public Set<StreamMetadata> streamsMetadataForStore(
     final @PathParam("storeName") String storeName
   ) {
-    return streams
+    return streams.getStreams()
       .streamsMetadataForStore(storeName)
       .stream()
       .map(StreamMetadata::of)
@@ -64,7 +66,7 @@ public class StreamsMetadataResource {
     @PathParam("key") String key
   ) {
     //TODO: Use the default.key.serde as key serializer
-    var found = streams.queryMetadataForKey(storeName, key, Serdes.String().serializer());
+    var found = streams.getStreams().queryMetadataForKey(storeName, key, Serdes.String().serializer());
 
     if(KeyQueryMetadata.NOT_AVAILABLE != found){
       return Response.ok(KeyMetadata.of(found)).build();

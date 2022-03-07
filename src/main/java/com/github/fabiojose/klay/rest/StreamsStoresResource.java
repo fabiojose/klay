@@ -12,7 +12,6 @@ import javax.ws.rs.core.Response.Status;
 
 import com.github.fabiojose.klay.streams.TopologyBuilder;
 
-import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 

@@ -3,6 +3,7 @@ package com.github.fabiojose.klay.util;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.ServerSocket;
+import java.util.Properties;
 
 public final class Utils {
 
@@ -15,6 +16,24 @@ public final class Utils {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+  }
+
+  public static Properties propertiesOf(String path) {
+
+      final var properties = new Properties();
+      try (
+        var inStream = Utils.class.getResourceAsStream(
+            path
+          )
+      ) {
+
+        properties.load(inStream);
+        return properties;
+
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+
   }
 
 }

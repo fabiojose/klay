@@ -42,20 +42,20 @@ public class TopologyBuilder {
   private static final String PROPERTY_PREFIX = "kafka-streams.";
 
   @ConfigProperty(name = "klay.stream.from.topic")
-  private String from;
+  String from;
 
   @ConfigProperty(name = "klay.stream.to.topic", defaultValue = NO_VALUE)
-  private String to;
+  String to;
 
   @ConfigProperty(name = "klay.stream.script", defaultValue = NO_VALUE)
-  private File file;
+  File file;
 
   @ConfigProperty(name = "klay.stream.live", defaultValue = "false")
-  private Boolean liveReload;
+  Boolean liveReload;
   private FileWatcher liveWatcher;
 
   @Inject
-  private ManagedExecutor executor;
+  ManagedExecutor executor;
 
   private KafkaStreams streams;
 

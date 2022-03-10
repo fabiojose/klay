@@ -19,6 +19,7 @@ public class StartBroker {
   );
 
   private final Properties properties;
+  private KafkaServer server;
 
   /**
    * @param properties Default Apache Kafka® properties.
@@ -37,7 +38,7 @@ public class StartBroker {
     log.debug("Apache Kafka® server properties {}", configurations);
 
     var config = new KafkaConfig(configurations);
-    var server = new KafkaServer(
+    server = new KafkaServer(
       config,
       new SystemTime(),
       Option.apply(StartBroker.class.getSimpleName()),
@@ -48,5 +49,9 @@ public class StartBroker {
     server.awaitShutdown();
 
     log.info("Apache Kafka® server started.");
+  }
+
+  void shutdown() {
+    server.shutdown();
   }
 }

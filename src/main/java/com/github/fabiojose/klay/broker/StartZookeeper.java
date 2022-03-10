@@ -62,7 +62,7 @@ public class StartZookeeper {
     }
   }
 
-  public void join() throws InterruptedException {
-    runner.join();
+  public void shutdown() {
+    runner.interrupt();
   }
 }

@@ -25,8 +25,10 @@ public class StartApacheKafka {
 
   private int zookeeperPort;
   private Optional<HostInfo> zookeeperBinding;
+  private Optional<StartZookeeper> zookeeper = Optional.empty();
 
   private int brokerPort;
+  private StartBroker broker;
 
   private final boolean startZookeeper;
   private final Properties zookeeperOverrideProperties;
@@ -65,12 +67,10 @@ public class StartApacheKafka {
       );
       log.debug("Actual zookeeper properties {}", configurations);
 
-      final var startZookeeper = new StartZookeeper(
-        configurations,
-        new CountDownLatch(1)
-      );
+      zookeeper =
+        Optional.of(new StartZookeeper(configurations, new CountDownLatch(1)));
 
-      startZookeeper.start();
+      zookeeper.get().start();
       this.zookeeperBinding =
         Optional.of(new HostInfo("localhost", zookeeperPort));
     } else {
@@ -86,7 +86,9 @@ public class StartApacheKafka {
     startZookeeperIfTrue(prefix);
 
     // Broker
-    final var brokerDefaultProperties = Utils.propertiesOf("/broker.properties");
+    final var brokerDefaultProperties = Utils.propertiesOf(
+      "/broker.properties"
+    );
     log.debug("Broker default properties: {}", brokerDefaultProperties);
 
     brokerDefaultProperties.setProperty(
@@ -125,9 +127,15 @@ public class StartApacheKafka {
     );
     log.debug("Actual broker configurations {}", configurations);
 
-    final var startBroker = new StartBroker(configurations);
-    startBroker.start();
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+
+    broker = new StartBroker(configurations);
+    broker.start();
   }
 
-  void stop() {}
+  void shutdown() {
+    log.info("Shutdown started . . .");
+    broker.shutdown();
+    zookeeper.ifPresent(StartZookeeper::shutdown);
+  }
 }

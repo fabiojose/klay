@@ -3,7 +3,6 @@ package com.github.fabiojose.klay.broker;
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
@@ -46,8 +45,6 @@ public class BrokerCommand implements Runnable {
 
   @Override
   public void run() {
-    final var latch = new CountDownLatch(2);
-
     final var zookeeperOverrideProperties = new Properties();
     final var brokerOverrideProperties = new Properties();
     final var startApacheKafka = new StartApacheKafka(

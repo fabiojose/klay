@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.admin.AdminServer.AdminServerException;
@@ -17,13 +16,11 @@ public class StartZookeeper {
   private static final Logger log = Logger.getLogger(StartZookeeper.class);
 
   private final Properties properties;
-  private final CountDownLatch latch;
 
   private Thread runner;
 
-  StartZookeeper(Properties properties, CountDownLatch latch) {
+  StartZookeeper(Properties properties) {
     this.properties = Objects.requireNonNull(properties);
-    this.latch = Objects.requireNonNull(latch);
   }
 
   void start() {

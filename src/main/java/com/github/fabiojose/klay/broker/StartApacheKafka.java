@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import org.apache.kafka.streams.state.HostInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +67,7 @@ public class StartApacheKafka {
       log.debug("Actual zookeeper properties {}", configurations);
 
       zookeeper =
-        Optional.of(new StartZookeeper(configurations, new CountDownLatch(1)));
+        Optional.of(new StartZookeeper(configurations));
 
       zookeeper.get().start();
       this.zookeeperBinding =

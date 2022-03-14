@@ -90,6 +90,7 @@ public class StartApacheKafka {
     );
     log.debug("Broker default properties: {}", brokerDefaultProperties);
 
+    this.brokerPort = Utils.freeTCPPort();
     brokerDefaultProperties.setProperty(
       StartBroker.PORT_PROPERTY,
       String.valueOf(this.brokerPort)
@@ -133,7 +134,6 @@ public class StartApacheKafka {
   }
 
   void shutdown() {
-    log.info("Shutdown started . . .");
     broker.shutdown();
     zookeeper.ifPresent(StartZookeeper::shutdown);
   }

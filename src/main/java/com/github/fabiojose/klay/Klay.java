@@ -16,7 +16,7 @@ import picocli.CommandLine.Option;
 public final class Klay implements Runnable {
 
   @Option(names = {"--external-id"}, hidden = true, required = true)
-  String externalId;
+  private String externalId;
 
   @Option(
     names = {
@@ -43,4 +43,7 @@ public final class Klay implements Runnable {
 
   }
 
+  public String getExternalId() {
+    return this.externalId;
+  }
 }

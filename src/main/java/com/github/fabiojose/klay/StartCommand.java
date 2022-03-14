@@ -22,9 +22,7 @@ public class StartCommand implements Runnable {
 
   private void writeMetadata() {
 
-    //TODO: Write the metadata
-
-    var metadata = MetadataWriter.of(parent.externalId);
+    var metadata = MetadataWriter.of(parent.getExternalId());
 
     //pid
     metadata.pid(ProcessHandle.current().pid());

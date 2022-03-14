@@ -3,12 +3,19 @@ package com.github.fabiojose.klay.broker;
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
+
+import com.github.fabiojose.klay.StartCommand;
+
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
 
 @Command(name = "broker", mixinStandardHelpOptions = true)
 public class BrokerCommand implements Runnable {
+
+  @ParentCommand
+  StartCommand parent;
 
   @Option(
     names = { "-p", "--property" },
@@ -36,12 +43,6 @@ public class BrokerCommand implements Runnable {
     required = false
   )
   boolean noZookeeper;
-
-  static class PropertiesOptionGroup {
-
-    Map<String, String> property;
-    File file;
-  }
 
   @Override
   public void run() {

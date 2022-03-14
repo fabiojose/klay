@@ -1,12 +1,12 @@
 package com.github.fabiojose.klay.broker;
 
+import com.github.fabiojose.klay.util.MetadataWriter;
 import com.github.fabiojose.klay.util.Utils;
 import java.io.File;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.UUID;
 import org.apache.kafka.streams.state.HostInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,23 +26,37 @@ public class StartApacheKafka {
   private Optional<HostInfo> zookeeperBinding;
   private Optional<StartZookeeper> zookeeper = Optional.empty();
 
-  private int brokerPort;
   private StartBroker broker;
 
   private final boolean startZookeeper;
   private final Properties zookeeperOverrideProperties;
   private final Properties brokerOverrideProperties;
+  private final String externalId;
 
   StartApacheKafka(
     boolean startZookeeper,
     Properties zookeeperOverrideProperties,
-    Properties brokerOverrideProperties
+    Properties brokerOverrideProperties,
+    String externalId
   ) {
     this.startZookeeper = startZookeeper;
     this.zookeeperOverrideProperties =
       Objects.requireNonNull(zookeeperOverrideProperties);
     this.brokerOverrideProperties =
       Objects.requireNonNull(brokerOverrideProperties);
+    this.externalId = Objects.requireNonNull(externalId);
+  }
+
+  private void writeMetadata() {
+
+    var metadata = MetadataWriter.of(this.externalId);
+
+    // type
+    metadata.type("broker");
+
+    // version: Apache Kafka® version
+    metadata.version("3.1.0");
+
   }
 
   private void startZookeeperIfTrue(final String prefix) {
@@ -79,7 +93,7 @@ public class StartApacheKafka {
   }
 
   void start() {
-    final var prefix = UUID.randomUUID().toString();
+    final var prefix = this.externalId;
 
     // Zookeeper
     startZookeeperIfTrue(prefix);
@@ -90,17 +104,14 @@ public class StartApacheKafka {
     );
     log.debug("Broker default properties: {}", brokerDefaultProperties);
 
-    this.brokerPort = Utils.freeTCPPort();
     brokerDefaultProperties.setProperty(
-      StartBroker.PORT_PROPERTY,
-      String.valueOf(this.brokerPort)
+      StartBroker.LISTENERS_PROPERTY,
+      "PLAINTEXT://:" + String.valueOf(Utils.freeTCPPort())
     );
 
     final var configurations = new Properties();
     configurations.putAll(brokerDefaultProperties);
     configurations.putAll(brokerOverrideProperties);
-    this.brokerPort =
-      Integer.valueOf(configurations.getProperty(StartBroker.PORT_PROPERTY));
 
     final var zookeeperConnect =
       this.zookeeperBinding.map(
@@ -128,6 +139,16 @@ public class StartApacheKafka {
     log.debug("Actual broker configurations {}", configurations);
 
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+
+    // Write the metadata
+    writeMetadata();
+    MetadataWriter.of(this.externalId)
+      .ports("broker=" + configurations.getProperty(StartBroker.LISTENERS_PROPERTY));
+
+    zookeeper.ifPresent(z -> {
+      MetadataWriter.of(this.externalId)
+        .ports(",zookeeper=" + zookeeperConnect);
+    });
 
     broker = new StartBroker(configurations);
     broker.start();

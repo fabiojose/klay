@@ -12,7 +12,7 @@ import scala.Option;
 
 public class StartBroker {
 
-  static final String PORT_PROPERTY = "port";
+  static final String LISTENERS_PROPERTY = "listeners";
 
   private static final Logger log = LoggerFactory.getLogger(
     StartBroker.class

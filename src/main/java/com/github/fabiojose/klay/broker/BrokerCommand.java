@@ -51,7 +51,8 @@ public class BrokerCommand implements Runnable {
     final var startApacheKafka = new StartApacheKafka(
       !this.noZookeeper,
       zookeeperOverrideProperties,
-      brokerOverrideProperties
+      brokerOverrideProperties,
+      parent.getTopCommand().getExternalId()
     );
 
     startApacheKafka.start();

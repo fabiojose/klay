@@ -36,8 +36,6 @@ public class StartZookeeper {
 
       final var zookeeper = new ZooKeeperServerMain();
 
-      //TODO: Some listener to watch server status and decrease the latch
-
       this.runner =
         new Thread(
           () -> {
@@ -60,6 +58,6 @@ public class StartZookeeper {
   }
 
   public void shutdown() {
-    runner.interrupt();
+    this.runner.interrupt();
   }
 }

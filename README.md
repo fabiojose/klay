@@ -1,14 +1,15 @@
-# Klay
+# 🕹️ Klay
 
-Play with Apache Kafka®. Good for proof-of-concept and labs.
+Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and study.
 
-- run Kafka Streams with steps written in Groovy
+- run Kafka Streams with steps written in Groovy or Java
+  - 😃 with live (hot) reloading
 - Rest API to interact with state stores and streams
-- start Apache Kafka® server
+- start an Apache Kafka® embedded
 
 ## Kafka Streams
 
-Run Kafka Streams applications with the easiness and flexibility of Groovy scripting.
+Run Kafka Streams applications with the easiness and flexibility of scripting.
 
 Default imports:
 
@@ -23,6 +24,13 @@ Available objects:
 - `builder`
 - `stream`
 
+Default Serdes:
+
+- key: `String`
+- value: `JsonSerde`
+
+### Groovy
+
 The script must return an instance of KStream. Example:
 
 ```groovy
@@ -30,10 +38,12 @@ The script must return an instance of KStream. Example:
 
 ```
 
-Default Serdes:
+### Java
 
-- key: `String`
-- value: `JsonSerde`
+```java
+// TODO:
+
+```
 
 ## Rest API
 

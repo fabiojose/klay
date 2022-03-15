@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'io.quarkus'
+    id 'org.jreleaser' version '1.0.0-M3'
 }
 
 repositories {
@@ -39,8 +40,8 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
 }
 
-group 'com.github.fabiojose.kafka'
-version '0.10'
+group 'com.github.fabiojose.klay'
+version '0.39.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -54,4 +55,55 @@ compileJava {
 
 compileTestJava {
     options.encoding = 'UTF-8'
+}
+
+jreleaser {
+    project {
+        name = 'klay'
+        website = 'https://github.com/fabiojose/klay'
+        authors = ['fabiojose@gmail.com']
+        license = 'Apache-2.0'
+        extraProperties.put('inceptionYear', '2022')
+        description = 'Play with Apache Kafka®'
+        longDescription = 'Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and study.'
+    }
+
+    release {
+        github {
+            owner = 'fabiojose'
+            overwrite = true
+        }
+    }
+
+    assemble {
+      archive {
+        klay {
+          active = 'ALWAYS'
+          distributionType = 'JAVA_BINARY'
+          fileSet {
+            input = '.'
+            includes = ['LICENSE', 'README.md']
+          }
+
+          fileSet {
+            input = 'src/scripts'
+            includes = ['*']
+            output = 'bin'
+          }
+
+          fileSet {
+            input = 'build'
+            includes = ['*.jar']
+            output = 'lib'
+          }
+        }
+      }
+    }
+    distributions {
+        klay {
+           artifact {
+               path = 'build/distributions/{{distributionName}}-{{projectVersion}}.zip'
+           }
+        }
+    }
 }

@@ -29,14 +29,14 @@ fi
 
 # TODO: Get the latest release from github api and download
 LATEST_RELEASE=$(curl -s https://api.github.com/repos/fabiojose/klay/releases/latest \
-| grep "browser_download_url.*zip" \
+| grep "browser_download_url.*tgz" \
 | cut -d : -f 2,3 \
 | tr -d \")
 
 # TODO: Extract the version number from LATEST_RELEASE
 NEW_KLAY_VERSION=$(echo $LATEST_RELEASE | cut -d'/' -f 8)
 
-DOWNLOAD_LOCATION=/tmp/klay.zip
+DOWNLOAD_LOCATION=/tmp/klay.tgz
 if [ -x "$(command -v wget)" ]; then
 | wget -qi -O "$DOWNLOAD_LOCATION" "$LATEST_RELEASE"
 else

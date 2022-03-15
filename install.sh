@@ -35,10 +35,11 @@ LATEST_RELEASE=$(curl -s https://api.github.com/repos/fabiojose/klay/releases/la
 
 # TODO: Extract the version number from LATEST_RELEASE
 NEW_KLAY_VERSION=$(echo $LATEST_RELEASE | cut -d'/' -f 8)
+NEW_KLAY_VERSION_NO=$(echo $NEW_KLAY_VERSION | cut -d'v' -f 2)
 
-DOWNLOAD_LOCATION=/tmp/klay.tgz
+DOWNLOAD_LOCATION='/tmp/klay.tgz'
 if [ -x "$(command -v wget)" ]; then
-| wget -qi -O "$DOWNLOAD_LOCATION" "$LATEST_RELEASE"
+  wget -q --show-progress -O "$DOWNLOAD_LOCATION" $LATEST_RELEASE
 else
   curl --connect-timeout 5 \
     --max-time 10 \
@@ -49,11 +50,13 @@ else
     "$LATEST_RELEASE"
 fi
 
-# TODO: When checks ok, download the latest tar gz distribution
-  # bin/ (with src/scripts)
-  # lib/ (with klay jar)
+if ! [[ $? -eq 0 ]]; then
+  echo "[ERROR] Could not download the latest Klay release." >&2
+  exit 6
+fi
 
-KLAY_CLI_HOME="$HOME/.klay/cli"
+KLAY_HOME="$HOME/.klay"
+KLAY_CLI_HOME="$KLAY_HOME/cli"
 # Check if $HOME/.klay/cli exists, if not, create it
 if [ ! -d "$KLAY_CLI_HOME" ]; then
   mkdir -p $KLAY_CLI_HOME
@@ -63,22 +66,23 @@ if [ ! -d "$KLAY_CLI_HOME" ]; then
   fi
 fi
 
+LIB_BAK="/tmp/klay-$NEW_KLAY_VERSION_NO-bak/lib"
 if [ -d "$KLAY_CLI_HOME/lib" ]; then
-  mkdir "$KLAY_CLI_HOME/lib/bak"
-  mv "$KLAY_CLI_HOME/lib/*" "$KLAY_CLI_HOME/lib/bak"
+  mv "$KLAY_CLI_HOME/lib/*" "$LIB_BAK"
 fi
 
+BIN_BAK="/tmp/klay-$NEW_KLAY_VERSION_NO-bak/bin"
 if [ -d "$KLAY_CLI_HOME/bin" ]; then
-  mkdir "$KLAY_CLI_HOME/bin/bak"
-  mv "$KLAY_CLI_HOME/bin/*" "$KLAY_CLI_HOME/bin/bak"
+  mv "$KLAY_CLI_HOME/bin/*" "$BIN_BAK"
 fi
 
-# TODO: Move tar gz content to $HOME/.klay/cli
-tar -xzf $DOWNLOAD_LOCATION --directory $KLAY_CLI_HOME
+tar -xzf "$DOWNLOAD_LOCATION" --directory "$KLAY_HOME"
+rm -rf "$KLAY_CLI_HOME"
+mv --force "$KLAY_HOME/klay-$NEW_KLAY_VERSION_NO" "$KLAY_CLI_HOME"
 
 if [[ $? -eq 0 ]]; then
-  rm -r "$KLAY_CLI_HOME/lib/bak"
-  rm -r "$KLAY_CLI_HOME/bin/bak"
+  rm -rf "$LIB_BAK"
+  rm -rf "$BIN_BAK"
 
   # TODO: Add to PATH if not presente: .bashrc and .zshrc
 

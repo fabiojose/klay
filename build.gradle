@@ -108,7 +108,7 @@ jreleaser {
     distributions {
         klay {
            artifact {
-               path = '${distribution.directory}/{{distributionName}}-{{projectVersion}}.tgz'
+               path = 'build/jreleaser/assemble/klay/archive/{{distributionName}}-{{projectVersion}}.tgz'
            }
         }
     }

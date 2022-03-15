@@ -18,7 +18,7 @@ fi
 # TODO:
 # $DEBUG_OPTS
 
-SHELL_COMMANDS=('ps' 'stop')
+SHELL_COMMANDS=('ps' 'stop' 'logs')
 
 if [[ ! " ${SHELL_COMMANDS[*]} " =~ " $1 " ]]; then
   source "$SCRIPTS_HOME/execw.sh" "$@"
@@ -27,5 +27,7 @@ else
     source "$SCRIPTS_HOME/kps.sh"
   elif [ "$1" == "stop" ]; then
     source "$SCRIPTS_HOME/kstop.sh" $2
+  elif [ "$1" == "logs" ]; then
+    source "$SCRIPTS_HOME/klogs.sh" "${@:2}"
   fi
 fi

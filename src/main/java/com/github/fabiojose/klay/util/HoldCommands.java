@@ -35,4 +35,24 @@ public class HoldCommands {
     )
     String[] klayIds;
   }
+
+  @Command(
+    name = "logs",
+    description = "Fetch the logs of a processes",
+    mixinStandardHelpOptions = true
+  )
+  public static class LogsCommand {
+
+    @Option(
+      names = {"-f", "--follow"},
+      description = "Follow log output"
+    )
+    boolean follow;
+
+    @Parameters(
+      paramLabel = "KLAY-ID",
+      description = "Given id of running process"
+    )
+    String klayId;
+  }
 }

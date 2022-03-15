@@ -3,7 +3,7 @@
 # klay ps
 
 if ! [ -x "$(command -v column)" ]; then
-  echo 'ERROR: column is not installed.' >&2
+  echo 'ERROR: column command not installed.' >&2
   exit 5
 fi
 

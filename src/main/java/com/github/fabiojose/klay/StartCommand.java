@@ -9,6 +9,7 @@ import picocli.CommandLine.ParentCommand;
 
 @Command(
   name = "start",
+  description = "Start new executions, like: Broker, Kafka Streams",
   subcommands = {
     BrokerCommand.class,
     StreamsCommand.class

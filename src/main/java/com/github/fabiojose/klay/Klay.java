@@ -1,5 +1,7 @@
 package com.github.fabiojose.klay;
 
+import com.github.fabiojose.klay.util.HoldCommands;
+
 import io.quarkus.runtime.annotations.QuarkusMain;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -9,13 +11,21 @@ import picocli.CommandLine.Option;
 @Command(
   name = "klay",
   subcommands = {
-    StartCommand.class
+    StartCommand.class,
+    HoldCommands.PsCommand.class,
+    HoldCommands.StopCommand.class
   },
-  mixinStandardHelpOptions = true
+  mixinStandardHelpOptions = true,
+  usageHelpWidth = 100
 )
 public final class Klay implements Runnable {
 
-  @Option(names = {"--external-id"}, hidden = true, required = true)
+  @Option(
+    names = {"--external-id"},
+    hidden = true,
+    required = true,
+    defaultValue = "--NOT-SET--"
+  )
   private String externalId;
 
   @Option(
@@ -46,4 +56,5 @@ public final class Klay implements Runnable {
   public String getExternalId() {
     return this.externalId;
   }
+
 }

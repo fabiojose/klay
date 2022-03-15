@@ -80,6 +80,11 @@ jreleaser {
         klay {
           active = 'ALWAYS'
           distributionType = 'JAVA_BINARY'
+
+          formats = [
+            org.jreleaser.model.Archive$Format.TGZ
+          ]
+
           fileSet {
             input = '.'
             includes = ['LICENSE', 'README.md']
@@ -99,10 +104,11 @@ jreleaser {
         }
       }
     }
+
     distributions {
         klay {
            artifact {
-               path = 'build/distributions/{{distributionName}}-{{projectVersion}}.zip'
+               path = '${distribution.directory}/{{distributionName}}-{{projectVersion}}.tgz'
            }
         }
     }

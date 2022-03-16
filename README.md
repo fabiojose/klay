@@ -7,6 +7,32 @@ Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and 
 - Rest API to interact with state stores and streams
 - start an Apache Kafka® embedded
 
+## Installation
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/fabiojose/klay/main/install.sh)"
+```
+
+If you get the following message, everying is ok:
+
+```console
+🕹️ Klay version <version> installed and configured with success.
+   ✅ Installation
+   ✅ Configuration
+```
+
+Open another terminal and type:
+
+```console
+klay --help
+```
+
+_Manual Installation_
+
+To perform the installation manually, follow these steps.
+
+TODO:
+
 ## Kafka Streams
 
 Run Kafka Streams applications with the easiness and flexibility of scripting.

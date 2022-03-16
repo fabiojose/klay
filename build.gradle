@@ -53,6 +53,10 @@ compileJava {
     options.compilerArgs << '-parameters'
 }
 
+jar {
+  archiveFileName = 'klay.jar'
+}
+
 compileTestJava {
     options.encoding = 'UTF-8'
 }

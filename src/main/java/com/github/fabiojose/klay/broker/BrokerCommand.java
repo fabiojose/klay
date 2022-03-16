@@ -2,9 +2,11 @@ package com.github.fabiojose.klay.broker;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import com.github.fabiojose.klay.StartCommand;
+import com.github.fabiojose.klay.util.Utils;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
@@ -34,7 +36,7 @@ public class BrokerCommand implements Runnable {
     description = { "File with Apache Kafka® server configurations." },
     required = false
   )
-  File propertiesFile;
+  Optional<File> propertiesFile;
 
   @Option(
     names = {"--no-zookeeper" },
@@ -44,14 +46,28 @@ public class BrokerCommand implements Runnable {
   )
   boolean noZookeeper;
 
+  private Properties brokerProperties() {
+
+    final var properties = propertiesFile
+      .map(File::getAbsolutePath)
+      .map(Utils::propertiesOf)
+      .orElseGet(()-> new Properties());
+
+    properties.putAll(
+      Optional.ofNullable(this.properties)
+        .orElseGet(() -> Map.of())
+    );
+
+    return properties;
+  }
+
   @Override
   public void run() {
-    final var zookeeperOverrideProperties = new Properties();
-    final var brokerOverrideProperties = new Properties();
+
     final var startApacheKafka = new StartApacheKafka(
       !this.noZookeeper,
-      zookeeperOverrideProperties,
-      brokerOverrideProperties,
+      new Properties(),
+      brokerProperties(),
       parent.getTopCommand().getExternalId()
     );
 

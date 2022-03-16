@@ -1,6 +1,7 @@
 package com.github.fabiojose.klay;
 
 import com.github.fabiojose.klay.util.HoldCommands;
+import com.github.fabiojose.klay.util.MetadataWriter;
 
 import io.quarkus.runtime.annotations.QuarkusMain;
 import picocli.CommandLine;
@@ -49,9 +50,18 @@ public final class Klay implements Runnable {
     System.exit( command.execute(args) );
   }
 
+  private void writeMetadata() {
+
+    var metadata = MetadataWriter.of(getExternalId());
+
+    //pid
+    metadata.pid(ProcessHandle.current().pid());
+
+  }
+
   @Override
   public void run() {
-
+    writeMetadata();
   }
 
   public String getExternalId() {

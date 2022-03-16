@@ -10,11 +10,10 @@ fi
 fmt="%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"
 (printf "$fmt" 'KLAY-ID' "PID" "TYPE" "VERSION" "PORTS"
 while IFS=';' read -r klayId linuxId typeSupplier versionSupplier created statusSupplier portsSupplier args; do
-  #TODO: Print out just the Running processes
 
   status=$(eval $statusSupplier)
   if [ "$status" == "Running" ]; then
-    #TODO: Get the type, version, status and ports
+    # Get the type, version, status and ports
     type=$(eval $typeSupplier)
     version=$(eval $versionSupplier)
     ports=$(eval $portsSupplier)

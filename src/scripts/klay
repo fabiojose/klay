@@ -20,9 +20,10 @@ fi
 
 SHELL_COMMANDS=('ps' 'stop' 'logs')
 
-# TODO: Redirect execution to execw.sh when -h or --help, even when its a shell command
+# Redirect execution to execw.sh when -h or --help, even when its a shell command
+HELP_REQUESTED=$([[ "$2" == "-h" ]] || [[ "$2" == "--help" ]] && echo -n 'y' || echo -n 'n')
 
-if [[ ! " ${SHELL_COMMANDS[*]} " =~ " $1 " ]]; then
+if [[ ! " ${SHELL_COMMANDS[*]} " =~ " $1 " ]] || [[ "$HELP_REQUESTED" == "y" ]]; then
   source "$SCRIPTS_HOME/execw.sh" "$@"
 else
   if [ "$1" == "ps" ]; then

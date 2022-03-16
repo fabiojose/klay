@@ -16,8 +16,11 @@ if ! [ -x "$(command -v nohup)" ]; then
 fi
 
 if [ "$DETACH" == "n" ]; then
-  # KLAY ID     LINUX PID    TYPE   VERSION    CREATED    STATUS    PORTS   ARGS
-  echo "$EXTERNAL_ID;cat '$PROCESS_DIR/pid';cat '$PROCESS_DIR/type';cat '$PROCESS_DIR/version';$(date +"%Y-%m-%d %H:%M:%S");bash psw.sh \$(cat $PROCESS_DIR/pid);cat '$PROCESS_DIR/ports';'$@'" >> $KLAY_PROCESSES
+
+  if [ "$KLAY_HELP_REQUESTED" == "n"]; then
+    # KLAY ID     LINUX PID    TYPE   VERSION    CREATED    STATUS    PORTS   ARGS
+    echo "$EXTERNAL_ID;cat '$PROCESS_DIR/pid';cat '$PROCESS_DIR/type';cat '$PROCESS_DIR/version';$(date +"%Y-%m-%d %H:%M:%S");bash psw.sh \$(cat $PROCESS_DIR/pid);cat '$PROCESS_DIR/ports';'$@'" >> $KLAY_PROCESSES
+  fi
 
   java $JAVA_OPTS -jar $KLAY_UBER_JAR_LOCATION --external-id=${EXTERNAL_ID} "$@"
 else

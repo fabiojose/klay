@@ -9,6 +9,8 @@ Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and 
 
 ## Installation
 
+To install or update Klay.
+
 ```console
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/fabiojose/klay/main/install.sh)"
 ```

@@ -99,20 +99,56 @@ if [[ $? -eq 0 ]]; then
   # Register the new version
   echo -n $NEW_KLAY_VERSION_NO > "$KLAY_CLI_HOME/version"
 
+  echo ''
   if [[ -z "$OLD_KLAY_VERSION" ]]; then
-    # TODO: Add to PATH if not presente: .bashrc and .zshrc
 
-    echo "Klay version $NEW_KLAY_VERSION installed with success."
+    KLAY_CFG='n'
+    KLAY_HOME_EXPORT="KLAY_HOME=$HOME/.klay"
+    KLAY_CLI_HOME_EXPORT='KLAY_CLI_HOME=$KLAY_HOME/cli'
+    JAR_EXPORT='KLAY_UBER_JAR_LOCATION=$KLAY_CLI_HOME/lib/klay.jar'
+    PATH_EXPORT='PATH=$PATH:$KLAY_CLI_HOME/bin'
+    CLASSPATH_EXPORT='CLASSPATH=$CLASSPATH:$KLAY_CLI_HOME/lib:'
+    if [ -f "$HOME/.bashrc" ]; then
+      echo '' >> "$HOME/.bashrc"
+      echo '# Klay configurations' >> "$HOME/.bashrc"
+      echo "export $KLAY_HOME_EXPORT" >> "$HOME/.bashrc"
+      echo "export $KLAY_CLI_HOME_EXPORT" >> "$HOME/.bashrc"
+      echo "export $JAR_EXPORT" >> "$HOME/.bashrc"
+      echo "export $PATH_EXPORT" >> "$HOME/.bashrc"
+      echo "export $CLASSPATH_EXPORT" >> "$HOME/.bashrc"
+      KLAY_CFG='y'
+    fi
+
+    if [ -f "$HOME/.zshrc" ]; then
+      echo '' >> "$HOME/.zshrc"
+      echo '# Klay configurations' >> "$HOME/.zshrc"
+      echo "export $KLAY_HOME_EXPORT" >> "$HOME/.zshrc"
+      echo "export $KLAY_CLI_HOME_EXPORT" >> "$HOME/.zshrc"
+      echo "export $JAR_EXPORT" >> "$HOME/.zshrc"
+      echo "export $PATH_EXPORT" >> "$HOME/.zshrc"
+      echo "export $CLASSPATH_EXPORT" >> "$HOME/.zshrc"
+      KLAY_CFG='y'
+    fi
+
+    if [ "$KLAY_CFG" == "y" ]; then
+      echo "🕹️ Klay version $NEW_KLAY_VERSION installed and configured with success."
+      echo '   ✅ Installation'
+      echo '   ✅ Configuration'
+    else
+      echo "🕹️ Klay version $NEW_KLAY_VERSION installed with success."
+      echo '   ✅ Installation'
+      echo '   ❌ Configuration: 😔 unable to configure Klay, may the current shell is not supported'
+    fi
     exit 0
   else
-    echo "Klay updated from $OLD_KLAY_VERSION to version $NEW_KLAY_VERSION with success."
+    echo "🕹️ Klay updated from $OLD_KLAY_VERSION to version $NEW_KLAY_VERSION with success."
     exit 0
   fi
 else
-  echo "[ERROR] Unable to install klay version $NEW_KLAY_VERSION"
+  echo "[ERROR] Unable to install klay version $NEW_KLAY_VERSION" >&2
 
-  mv "$KLAY_CLI_HOME/lib/bak/*" "$KLAY_CLI_HOME/lib"
-  mv "$KLAY_CLI_HOME/bin/bak/*" "$KLAY_CLI_HOME/bin"
+  mv --force "$LIB_BAK" "$KLAY_CLI_HOME/lib"
+  mv --force "$BIN_BAK" "$KLAY_CLI_HOME/bin"
   exit 6
 fi
 

@@ -20,6 +20,8 @@ fi
 
 SHELL_COMMANDS=('ps' 'stop' 'logs')
 
+# TODO: Redirect execution to execw.sh when -h or --help, even when its a shell command
+
 if [[ ! " ${SHELL_COMMANDS[*]} " =~ " $1 " ]]; then
   source "$SCRIPTS_HOME/execw.sh" "$@"
 else

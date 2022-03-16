@@ -19,7 +19,6 @@ if [ "$DETACH" == "n" ]; then
   # KLAY ID     LINUX PID    TYPE   VERSION    CREATED    STATUS    PORTS   ARGS
   echo "$EXTERNAL_ID;cat '$PROCESS_DIR/pid';cat '$PROCESS_DIR/type';cat '$PROCESS_DIR/version';$(date +"%Y-%m-%d %H:%M:%S");bash psw.sh $(cat $PROCESS_DIR/pid);cat '$PROCESS_DIR/ports';'$@'" >> $KLAY_PROCESSES
 
-  echo "$@"
   java $JAVA_OPTS -jar $KLAY_UBER_JAR_LOCATION --external-id=${EXTERNAL_ID} "$@"
 else
   nohup java $JAVA_OPTS -jar $KLAY_UBER_JAR_LOCATION --external-id=${EXTERNAL_ID} "$@" >> "${LOGS_DIR}/${EXTERNAL_ID}.log" 2> "${LOGS_DIR}/${EXTERNAL_ID}-errors.log" &

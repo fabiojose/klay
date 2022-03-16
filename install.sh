@@ -100,7 +100,7 @@ if [[ $? -eq 0 ]]; then
   echo -n $NEW_KLAY_VERSION_NO > "$KLAY_CLI_HOME/version"
 
   echo ''
-  if [[ -z "$OLD_KLAY_VERSION" ]]; then
+  if [[ -z "$OLD_KLAY_VERSION_NO" ]]; then
 
     KLAY_CFG='n'
     KLAY_HOME_EXPORT="KLAY_HOME=$HOME/.klay"
@@ -141,7 +141,7 @@ if [[ $? -eq 0 ]]; then
     fi
     exit 0
   else
-    echo "🕹️ Klay updated from $OLD_KLAY_VERSION to version $NEW_KLAY_VERSION with success."
+    echo "🕹️ Klay updated from $OLD_KLAY_VERSION_NO to version $NEW_KLAY_VERSION_NO with success."
     exit 0
   fi
 else

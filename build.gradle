@@ -41,7 +41,7 @@ dependencies {
 }
 
 group 'com.github.fabiojose.klay'
-version '0.39.5'
+version '0.39.6'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17

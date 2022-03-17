@@ -107,3 +107,7 @@ If you want to build an _über-jar_, execute the following command:
 ```
 
 The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+
+## Thanks
+
+- Klay icon: <a href="https://www.flaticon.com/free-icons/gamepad" title="gamepad icons">Gamepad icons created by Vitaly Gorbachev - Flaticon</a>

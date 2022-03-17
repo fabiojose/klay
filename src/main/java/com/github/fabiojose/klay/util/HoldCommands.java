@@ -3,6 +3,7 @@ package com.github.fabiojose.klay.util;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Help.Visibility;
 
 public class HoldCommands {
 
@@ -38,7 +39,7 @@ public class HoldCommands {
 
   @Command(
     name = "logs",
-    description = "Fetch the logs of a processes",
+    description = "Fetch the logs of a process",
     mixinStandardHelpOptions = true
   )
   public static class LogsCommand {
@@ -51,8 +52,39 @@ public class HoldCommands {
 
     @Parameters(
       paramLabel = "KLAY-ID",
-      description = "Given id of running process"
+      description = "Given id of process",
+      arity = "1"
     )
     String klayId;
+  }
+
+  @Command(
+    name = "describe",
+    description = "Show details of a specific process",
+    mixinStandardHelpOptions = true
+  )
+  public static class DescribeCommand {
+
+    @Parameters(
+      paramLabel = "KLAY-ID",
+      description = "Given id of process",
+      arity = "1"
+    )
+    String klayId;
+
+    @Option(
+      names = {"-o", "--output"},
+      paramLabel = "FORMAT",
+      description = "Output format. Valid values: ${COMPLETION-CANDIDATES}",
+      defaultValue = "PLAIN",
+      required = true,
+      showDefaultValue = Visibility.ALWAYS
+    )
+    OutputType format;
+  }
+
+  public static enum OutputType {
+    PLAIN,
+    CSV;
   }
 }

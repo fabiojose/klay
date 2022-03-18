@@ -20,7 +20,7 @@ public class StreamsCommand implements Runnable {
 
   @Parameters(
     paramLabel = "FILE",
-    description = "Groovy script file with Kafka Streams processing steps."
+    description = "Groovy or Java file with Kafka Streams processing steps."
   )
   private File script;
 
@@ -76,7 +76,7 @@ public class StreamsCommand implements Runnable {
 
   @Option(
     names = {"--live"},
-    description = "Live reload the Groovy script file.",
+    description = "Live reload the topology.",
     defaultValue = "false",
     required = false
   )

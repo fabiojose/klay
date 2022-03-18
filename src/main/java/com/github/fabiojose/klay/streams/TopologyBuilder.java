@@ -1,5 +1,8 @@
 package com.github.fabiojose.klay.streams;
 
+import com.github.fabiojose.klay.util.Compiler;
+import com.github.fabiojose.klay.util.FileWatcher;
+import com.github.fabiojose.klay.util.FileWatcher.FileWatchEvent;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import io.quarkus.runtime.ShutdownEvent;
@@ -16,10 +19,6 @@ import java.util.stream.StreamSupport;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import com.github.fabiojose.klay.util.FileWatcher;
-import com.github.fabiojose.klay.util.FileWatcher.FileWatchEvent;
-
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
@@ -52,6 +51,7 @@ public class TopologyBuilder {
 
   @ConfigProperty(name = "klay.stream.live", defaultValue = "false")
   Boolean liveReload;
+
   private FileWatcher liveWatcher;
 
   @Inject
@@ -102,30 +102,79 @@ public class TopologyBuilder {
     return Optional.empty();
   }
 
+  private Compiler javaCompiler;
+
+  private Compiler getJavaCompiler() {
+    if (null == javaCompiler) {
+      this.javaCompiler = Compiler.getInstance();
+    }
+
+    return this.javaCompiler;
+  }
+
+  @SuppressWarnings("rawtypes")
+  private Optional<KStream> executeJava(
+    final KStream fromStream,
+    StreamsBuilder builder,
+    File topologyFile
+  ) {
+    var topology = getJavaCompiler().compileAndCreateInstance(topologyFile);
+
+    var result = topology.build(fromStream, builder);
+    if (!NO_VALUE.equals(to)) {
+      if (null != result) {
+        return Optional.of(result);
+      } else {
+        throw new IllegalStateException(
+          "Your script must return an instance of KStream"
+        );
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  @SuppressWarnings("rawtypes")
+  private Optional<KStream> buildTopology(
+    final KStream fromStream,
+    StreamsBuilder builder,
+    File topology
+  ) {
+
+    if (topology.getName().toLowerCase().endsWith(".groovy")) {
+
+      return executeGroovyScript(builder, fromStream, topology);
+
+    } else if (topology.getName().toLowerCase().endsWith(".java")) {
+
+      return executeJava(fromStream, builder, topology);
+
+    } else {
+      throw new IllegalArgumentException(
+        "Unsupported file type: " + topology.getName()
+      );
+    }
+  }
+
   private Topology build() {
     final var builder = new StreamsBuilder();
     final var stream = builder.stream(from);
 
-    final var resultStream = executeGroovyScript(builder, stream, file);
-
+    final var resultStream = buildTopology(stream, builder, file);
     resultStream.ifPresent(ks -> ks.to(to));
 
     return builder.build();
   }
 
   private void configureLiveReload() {
-
-    if (liveReload && null== liveWatcher) {
-
+    if (liveReload && null == liveWatcher) {
       liveWatcher = new FileWatcher(file, this::reStart);
       executor.execute(liveWatcher);
-
-    } else if(!liveReload) {
+    } else if (!liveReload) {
       log.info("Live reloading disabled.");
-    } else if(null!= liveWatcher){
+    } else if (null != liveWatcher) {
       log.info("Live reloading already started.");
     }
-
   }
 
   void reStart(FileWatchEvent event) {
@@ -153,19 +202,20 @@ public class TopologyBuilder {
               ConfigProvider.getConfig().getConfigValue(propertyName).getValue()
             )
         )
-        .peek(System.out::println)
         .collect(Collectors.toMap(Entry::getKey, Entry::getValue))
     );
 
     streams = new KafkaStreams(build(), props);
+    streams.cleanUp();
     streams.start();
+
+    //TODO: Register process metadata
 
     configureLiveReload();
   }
 
   void onStop(@Observes ShutdownEvent evt) {
     streams.close();
-    streams.cleanUp();
     log.info("Kafka streams topology closed.");
   }
 

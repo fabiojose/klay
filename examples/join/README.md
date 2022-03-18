@@ -1,6 +1,11 @@
-# join
+# join written using Groovy
 
 Example with (inner) join of two source streams and sinking to `paid` topic.
+
+Tools:
+
+- Klay
+- Kafka CLI
 
 Topics:
 
@@ -10,13 +15,15 @@ Topics:
 
 Run:
 
-```bash
-./run.sh
+```console
+./start.sh
+
+# CTRL+C to stop
 ```
 
 Produce some `orders` events:
 
-```bash
+```console
 kafka-console-producer.sh \
 --broker-list localhost:9092 \
 --topic orders \
@@ -31,7 +38,7 @@ EOF
 
 Produce some `payments` events:
 
-```bash
+```console
 kafka-console-producer.sh \
 --broker-list localhost:9092 \
 --topic payments \
@@ -44,13 +51,14 @@ kafka-console-producer.sh \
 EOF
 ```
 
-Start a consumer to see the results:
+Start a consumer on `paid` topic to see the results:
 
-```bash
+```console
 kafka-console-consumer.sh \
 --bootstrap-server localhost:9092 \
 --from-beginning  \
 --topic paid \
+--property print.partition=true \
 --property print.offset=true \
 --property print.headers=true \
 --property print.key=true

@@ -14,7 +14,7 @@ import java.util.Map;
  */
 class t implements K {
 
-  // the class must have one method with this signature and named as apply
+  // the class must have one method with this signature and named as build
   public KStream build(KStream fromStream, StreamsBuilder builder) {
 
     fromStream.filter((k,v) -> k.equals("2002"))

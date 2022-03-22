@@ -15,6 +15,7 @@ __Features__
   - [ ] Raft (aka Kraft)
   - [ ] Redpanda
   - [ ] Choose version
+- [ ] Start Cluster
 - [x] Start Kafka Streams written in Groovy
 - [x] Start Kafka Streams written in Java
 - [x] Rest API for Kafka Streams State Stores

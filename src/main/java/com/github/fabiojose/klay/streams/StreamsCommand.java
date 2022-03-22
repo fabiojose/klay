@@ -1,5 +1,7 @@
 package com.github.fabiojose.klay.streams;
 
+import com.github.fabiojose.klay.StartCommand;
+import com.github.fabiojose.klay.util.MetadataWriter;
 import com.github.fabiojose.klay.util.Utils;
 import io.quarkus.runtime.Quarkus;
 import java.io.File;
@@ -11,12 +13,16 @@ import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
 
 @Command(name = "streams", mixinStandardHelpOptions = true)
 public class StreamsCommand implements Runnable {
 
   private static final String PROPERTY_PREFIX = "kafka-streams.";
+
+  @ParentCommand
+  StartCommand parent;
 
   @Parameters(
     paramLabel = "FILE",
@@ -123,12 +129,29 @@ public class StreamsCommand implements Runnable {
     );
 
     System.setProperty("klay.stream.live", String.valueOf(liveReload));
+
+    System.setProperty("klay.external-id", parent.getTopCommand().getExternalId());
+  }
+
+  private void writeMetadata() {
+
+    var writer = MetadataWriter.of(parent.getTopCommand().getExternalId());
+
+    // application.server, if configured
+    if(null!= properties && properties.containsKey("application.server")){
+      writer.ports("server=" + properties.get("application.server"));
+    }
+
+    // http port
+    writer.ports(",rest=localhost:" + System.getProperty("quarkus.http.port"));
+
   }
 
   @Override
   public void run() {
     validate();
     configure();
+    writeMetadata();
 
     // Start quarkus
     Quarkus.run(new String[] {});

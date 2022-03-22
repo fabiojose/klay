@@ -2,6 +2,7 @@ package com.github.fabiojose.klay.streams;
 
 import com.github.fabiojose.klay.util.Compiler;
 import com.github.fabiojose.klay.util.FileWatcher;
+import com.github.fabiojose.klay.util.MetadataWriter;
 import com.github.fabiojose.klay.util.FileWatcher.FileWatchEvent;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -52,12 +53,27 @@ public class TopologyBuilder {
   @ConfigProperty(name = "klay.stream.live", defaultValue = "false")
   Boolean liveReload;
 
+  @ConfigProperty(name = "klay.external-id")
+  String externalId;
+
   private FileWatcher liveWatcher;
 
   @Inject
   ManagedExecutor executor;
 
   private KafkaStreams streams;
+
+  private boolean metadataGenerated;
+
+  private void writeMetadata() {
+    if(!this.metadataGenerated) {
+      var writer = MetadataWriter.of(this.externalId);
+      writer.type("streams");
+      writer.version("3.1.0");
+
+      this.metadataGenerated = true;
+    }
+  }
 
   @SuppressWarnings("rawtypes")
   private Optional<KStream> executeGroovyScript(
@@ -209,7 +225,8 @@ public class TopologyBuilder {
     streams.cleanUp();
     streams.start();
 
-    //TODO: Register process metadata
+    // Register process metadata
+    writeMetadata();
 
     configureLiveReload();
   }

@@ -10,6 +10,9 @@ Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and 
 __Features__
 
 - [x] Start Apache Kafka® Server
+  - [ ] Raft (aka Kraft)
+  - [ ] Redpanda
+  - [ ] Choose version
 - [x] Start Kafka Streams written in Groovy
 - [x] Start Kafka Streams written in Java
 - [x] Rest API for Kafka Streams State Stores
@@ -17,6 +20,10 @@ __Features__
   - [x] kafka-topics
   - [ ] kafka-console-consumer
   - [ ] kafka-console-producer
+- [ ] Operational commands
+  - [x] `klay ps`: list running processes
+  - [x] `klay logs`: get logs
+  - [x] `klay stop`: stop running process
 
 ## Installation
 

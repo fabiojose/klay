@@ -22,26 +22,43 @@ BROKER_PORT=$(klay describe -o=CSV $KLAY_BROKER_ID | tail -1 | cut -d';' -f 6 | 
 BOOTSTRAP_SERVER="localhost:$BROKER_PORT"
 
 # create topics
-kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVER \
+klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
 --create \
 --partitions 3 \
 --topic orders
 
-kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVER \
+klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
 --create \
 --partitions 3 \
 --topic payments
 
-kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVER \
+klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
 --create \
 --partitions 3 \
 --topic paid
 
-klay start streams \
+read -rsn1 -p"Press any key to start the Kafka Streams using Klay";echo
+
+klay --detach start streams \
 --from='orders' \
 --to='paid' \
 --application-id='demo-join' \
 --bootstrap-servers=$BOOTSTRAP_SERVER \
 ./join.java
+
+read -rsn1 -p"Press any key to produce test data";echo
+
+source ./test-data.sh $BOOTSTRAP_SERVER
+
+read -rsn1 -p"Press any key to start a console consumer and see the results";echo
+
+kafka-console-consumer.sh \
+--bootstrap-server $BOOTSTRAP_SERVER \
+--from-beginning  \
+--topic paid \
+--property print.partition=true \
+--property print.offset=true \
+--property print.headers=true \
+--property print.key=true
 
 klay stop $KLAY_BROKER_ID

@@ -2,6 +2,8 @@
 
 Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and study.
 
+> 🔋 Batteries included 🔋
+
 - run Kafka Streams with steps written in Groovy or Java
   - 😃 with live (hot) reloading
 - Rest API to interact with state stores and streams
@@ -18,8 +20,8 @@ __Features__
 - [x] Rest API for Kafka Streams State Stores
 - [ ] Wrappers
   - [x] kafka-topics
-  - [ ] kafka-console-consumer
-  - [ ] kafka-console-producer
+  - [x] kafka-console-consumer
+  - [x] kafka-console-producer
 - [ ] Operational commands
   - [x] `klay ps`: list running processes
   - [x] `klay logs`: get logs
@@ -28,7 +30,7 @@ __Features__
 
 ## Installation
 
-To install or update Klay.
+To install or update Klay you need JDK 17.
 
 ```console
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/fabiojose/klay/main/install.sh)"

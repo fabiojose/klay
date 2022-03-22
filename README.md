@@ -7,6 +7,17 @@ Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and 
 - Rest API to interact with state stores and streams
 - start an Apache Kafka® embedded
 
+__Features__
+
+- [x] Start Apache Kafka® Server
+- [x] Start Kafka Streams written in Groovy
+- [x] Start Kafka Streams written in Java
+- [x] Rest API for Kafka Streams State Stores
+- [ ] Wrappers
+  - [x] kafka-topics
+  - [ ] kafka-console-consumer
+  - [ ] kafka-console-producer
+
 ## Installation
 
 To install or update Klay.

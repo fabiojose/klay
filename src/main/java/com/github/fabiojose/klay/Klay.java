@@ -45,8 +45,12 @@ public final class Klay implements Runnable {
   public static void main(String[] args) {
 
     final var command = new CommandLine(Klay.class);
-    command.setUnmatchedArgumentsAllowed(true);
-    command.setExecutionStrategy(new CommandLine.RunAll());
+
+    // Add programmatic created commands
+    command.addSubcommand(KafkaCLICommand.programmatic());
+
+    command.setUnmatchedArgumentsAllowed(true)
+      .setExecutionStrategy(new CommandLine.RunAll());
 
     System.exit( command.execute(args) );
   }

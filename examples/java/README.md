@@ -13,7 +13,7 @@ Topics:
 - payments
 - paid
 
-Run:
+Start the example:
 
 ```console
 ./start.sh
@@ -22,6 +22,8 @@ Run:
 ```
 
 Produce some `orders` events:
+
+> TIP: use the command `klay ps` to see the value of `<BROKER_PORT>`
 
 ```console
 kafka-console-producer.sh \

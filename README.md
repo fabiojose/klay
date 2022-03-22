@@ -24,6 +24,7 @@ __Features__
   - [x] `klay ps`: list running processes
   - [x] `klay logs`: get logs
   - [x] `klay stop`: stop running process
+  - [x] `klay describe`: show details about process
 
 ## Installation
 

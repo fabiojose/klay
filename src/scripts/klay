@@ -27,7 +27,7 @@ if [[ ! " ${SHELL_COMMANDS[*]} " =~ " $1 " ]] || [[ "$KLAY_HELP_REQUESTED" == "y
   source "$SCRIPTS_HOME/execw.sh" "$@"
 else
   if [ "$1" == "ps" ]; then
-    source "$SCRIPTS_HOME/kps.sh"
+    source "$SCRIPTS_HOME/kps.sh" $2
   elif [ "$1" == "stop" ]; then
     source "$SCRIPTS_HOME/kstop.sh" $2
   elif [ "$1" == "logs" ]; then

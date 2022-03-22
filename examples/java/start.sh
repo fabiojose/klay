@@ -39,12 +39,12 @@ klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
 
 read -rsn1 -p"Press any key to start the Kafka Streams using Klay";echo
 
-klay --detach start streams \
+KLAY_STREAMS_ID=$(klay --detach start streams \
 --from='orders' \
 --to='paid' \
 --application-id='demo-join' \
 --bootstrap-servers=$BOOTSTRAP_SERVER \
-./join.java
+./join.java | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
 
 read -rsn1 -p"Press any key to produce test data";echo
 
@@ -62,3 +62,4 @@ kafka-console-consumer.sh \
 --property print.key=true
 
 klay stop $KLAY_BROKER_ID
+klay stop $KLAY_STREAMS_ID

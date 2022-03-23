@@ -16,7 +16,8 @@ import picocli.CommandLine.Option;
     HoldCommands.PsCommand.class,
     HoldCommands.StopCommand.class,
     HoldCommands.LogsCommand.class,
-    HoldCommands.DescribeCommand.class
+    HoldCommands.DescribeCommand.class,
+    HoldCommands.PruneCommand.class
   },
   mixinStandardHelpOptions = true,
   usageHelpWidth = 100

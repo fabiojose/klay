@@ -34,6 +34,7 @@ __Features__
   - [x] `klay logs`: get logs
   - [x] `klay stop`: stop running process
   - [x] `klay describe`: show details about process
+  - [x] `klay prune`: remove unused data
 
 ## Installation
 

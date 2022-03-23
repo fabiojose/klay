@@ -18,7 +18,7 @@ fi
 # TODO:
 # $DEBUG_OPTS
 
-SHELL_COMMANDS=('ps' 'stop' 'logs' 'describe')
+SHELL_COMMANDS=('ps' 'stop' 'logs' 'describe' 'prune')
 
 # Redirect execution to execw.sh when -h or --help, even when its a shell command
 export KLAY_HELP_REQUESTED=$([[ "$2" == "-h" ]] || [[ "$2" == "--help" ]] && echo -n 'y' || echo -n 'n')
@@ -34,5 +34,7 @@ else
     source "$SCRIPTS_HOME/klogs.sh" "${@:2}"
   elif [ "$1" == "describe" ]; then
     source "$SCRIPTS_HOME/__describe.sh" "${@:1}"
+  elif [ "$1" == "prune" ]; then
+    source "$SCRIPTS_HOME/__prune.sh"
   fi
 fi

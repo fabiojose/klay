@@ -87,4 +87,13 @@ public class HoldCommands {
     PLAIN,
     CSV;
   }
+
+  @Command(
+    name = "prune",
+    description = "Remove unused data of all stopped processes",
+    mixinStandardHelpOptions = true
+  )
+  public static class PruneCommand {
+
+  }
 }

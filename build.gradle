@@ -78,8 +78,14 @@ jreleaser {
 
     release {
         github {
+            username = 'fabiojose'
             owner = 'fabiojose'
             overwrite = true
+            changelog {
+              formated = 'ALWAYS'
+              preset = 'conventional-commits'
+              format = '- {{commitShortHash}} {{commitTitle}}'
+            }
         }
     }
 

@@ -11,18 +11,22 @@ Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and 
 
 __Features__
 
-- [x] Start Apache Kafka® Server
+- [ ] Start Apache Kafka® Server
+  - [x] Broker 3.1.0 + Zookeeper
   - [ ] Raft (aka Kraft)
   - [ ] Redpanda
   - [ ] Choose version
 - [ ] Start Cluster
 - [x] Start Kafka Streams written in Groovy
 - [x] Start Kafka Streams written in Java
+- [x] Hot reloading of Kafka Streams
 - [x] Rest API for Kafka Streams State Stores
 - [ ] Wrappers
   - [x] kafka-topics
   - [x] kafka-console-consumer
   - [x] kafka-console-producer
+  - [ ] kafka-consumer-perf-test
+  - [ ] kafka-producer-perf-test
 - [ ] Operational commands
   - [x] `klay ps`: list running processes
   - [x] `klay logs`: get logs

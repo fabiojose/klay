@@ -29,19 +29,20 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class TopologyBuilder {
 
-  private static final Logger log = Logger.getLogger(TopologyBuilder.class);
+  private static final Logger log = LoggerFactory.getLogger(TopologyBuilder.class);
 
   private static final String NO_VALUE = "##__NO-VALUE__##";
   private static final String STREAM_PROPERTY = "stream";
   private static final String BUILDER_PROPERTY = "builder";
   private static final String PROPERTY_PREFIX = "kafka-streams.";
 
-  @ConfigProperty(name = "klay.stream.from.topic")
+  @ConfigProperty(name = "klay.stream.from.topic", defaultValue = NO_VALUE)
   String from;
 
   @ConfigProperty(name = "klay.stream.to.topic", defaultValue = NO_VALUE)
@@ -105,7 +106,7 @@ public class TopologyBuilder {
         if (result instanceof KStream) {
           return Optional.of((KStream) result);
         } else {
-          log.warnf("The groovy script return is invalid: {}", result);
+          log.warn("The groovy script return is invalid: {}", result);
           throw new IllegalStateException(
             "Your script must return an instance of KStream, not " + result
           );
@@ -194,7 +195,7 @@ public class TopologyBuilder {
   }
 
   void reStart(FileWatchEvent event) {
-    log.infof("Restarting the kafka streams triggered by event %s", event);
+    log.info("Restarting the kafka streams triggered by event {}", event);
     onStop(null);
     onStart(null);
   }
@@ -233,7 +234,7 @@ public class TopologyBuilder {
 
   void onStop(@Observes ShutdownEvent evt) {
     streams.close();
-    log.info("Kafka streams topology closed.");
+    log.info("Kafka streams topology closed");
   }
 
   public KafkaStreams getStreams() {

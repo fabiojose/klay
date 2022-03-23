@@ -41,9 +41,9 @@ public class StreamsCommand implements Runnable {
   @Option(
     names = { "--from" },
     description = "Topic name to create the stream's source.",
-    required = true
+    required = false
   )
-  private String from;
+  private Optional<String> from;
 
   @Option(
     names = { "--to" },
@@ -98,8 +98,6 @@ public class StreamsCommand implements Runnable {
 
   private void configure() {
 
-    System.setProperty("quarkus.kafka-streams.topics", from);
-
     // Bootstrap servers
     System.setProperty(
       "kafka-streams.bootstrap.servers",
@@ -118,7 +116,7 @@ public class StreamsCommand implements Runnable {
       .forEach(p -> System.setProperty(p.getKey(), p.getValue()));
 
     // Configure properties: from, to and file
-    System.setProperty("klay.stream.from.topic", from);
+    from.ifPresent(topic -> System.setProperty("klay.stream.from.topic", topic));
     to.ifPresent(topic -> System.setProperty("klay.stream.to.topic", topic));
     System.setProperty("klay.stream.script", script.getAbsolutePath());
 

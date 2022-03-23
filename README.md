@@ -78,8 +78,8 @@ Default imports:
 
 Available objects:
 
+- `fromStream`: it's `null` when `--from` option has no value
 - `builder`
-- `stream`
 
 Default Serdes:
 

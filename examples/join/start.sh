@@ -37,9 +37,9 @@ read -rsn1 -p"Press any key to start the Kafka Streams using Klay";echo
 KLAY_STREAMS_ID=$(klay --detach start streams \
 --from='orders' \
 --to='paid' \
---application-id='demo-join' \
+--application-id='demo-join-groovy' \
 --bootstrap-servers=$BOOTSTRAP_SERVER \
-./join.java | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
+./join.groovy | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
 
 read -rsn1 -p"Press any key to produce test data";echo
 

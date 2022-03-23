@@ -1,3 +1,5 @@
+![Kattlo](./artwork/klay-logo-small.png)
+
 # 🕹️ Klay
 
 Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and study.

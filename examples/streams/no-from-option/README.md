@@ -1,6 +1,4 @@
-# join written in Groovy
-
-Example with (inner) join of two source streams and sinking to `paid` topic.
+# no from topic written in Java
 
 Tools:
 
@@ -8,9 +6,8 @@ Tools:
 
 Topics:
 
-- orders
 - payments
-- paid
+- payments-copy
 
 Start the example and follow de messages:
 

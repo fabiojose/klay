@@ -16,22 +16,14 @@ class t implements K {
 
   /**
    * the class must have one method with this signature and named as build.
-   * @param fromStream Will be {@code null} when {@code --to} option has no value
+   * @param fromStream Will be {@code null} when {@code --from} option has no value
    */
   public KStream build(KStream fromStream, StreamsBuilder builder) {
 
-    fromStream.filter((k,v) -> k.equals("2002"))
-      .peek((k,v) -> System.out.println(v));
-
     var payments = builder.stream("payments");
+    payments.to("payments-copy");
 
-    // must return an instance of KStream
-    return fromStream.join(
-      payments,
-      (order, payment) -> Map.of("order", order, "payment", payment),
-      JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(5))
-    )
-    .peek((k, v) -> System.out.println(v));
+    return payments;
 
   }
 

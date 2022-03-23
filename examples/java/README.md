@@ -1,11 +1,10 @@
-# join written using Java
+# join written in Java
 
 Example with (inner) join of two source streams and sinking to `paid` topic.
 
 Tools:
 
 - Klay
-- Kafka CLI
 
 Topics:
 

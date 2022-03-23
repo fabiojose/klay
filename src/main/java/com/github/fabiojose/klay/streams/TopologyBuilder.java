@@ -173,11 +173,16 @@ public class TopologyBuilder {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   private Topology build() {
     final var builder = new StreamsBuilder();
-    final var stream = builder.stream(from);
 
-    final var resultStream = buildTopology(stream, builder, file);
+    KStream fromStream = null;
+    if(!NO_VALUE.equals(from)){
+      fromStream = builder.stream(from);
+    }
+
+    final var resultStream = buildTopology(fromStream, builder, file);
     resultStream.ifPresent(ks -> ks.to(to));
 
     return builder.build();

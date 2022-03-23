@@ -5,11 +5,6 @@ if ! [ -x "$(command -v klay)" ]; then
   exit 5
 fi
 
-if ! [ -x "$(command -v kafka-topics.sh)" ]; then
-  echo 'ERROR: command kafka-topics.sh not found.' >&2
-  exit 5
-fi
-
 # klay start broker (broker + zookeeper)
 KLAY_BROKER_ID=$(klay -d start broker | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
 
@@ -52,7 +47,7 @@ source ./test-data.sh $BOOTSTRAP_SERVER
 
 read -rsn1 -p"Press any key to start a console consumer and see the results";echo
 
-kafka-console-consumer.sh \
+klay kafka-cli consumer \
 --bootstrap-server $BOOTSTRAP_SERVER \
 --from-beginning  \
 --topic paid \

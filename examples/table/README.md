@@ -9,7 +9,8 @@ Topics:
 
 Tables:
 
--
+- busy-terminals-store
+- free-terminals-store
 
 Run:
 

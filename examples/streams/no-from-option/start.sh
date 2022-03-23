@@ -20,26 +20,14 @@ BOOTSTRAP_SERVER="localhost:$BROKER_PORT"
 klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
 --create \
 --partitions 3 \
---topic orders
-
-klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
---create \
---partitions 3 \
 --topic payments
-
-klay kafka-cli topic --bootstrap-server $BOOTSTRAP_SERVER \
---create \
---partitions 3 \
---topic paid
 
 read -rsn1 -p"Press any key to start the Kafka Streams using Klay";echo
 
 KLAY_STREAMS_ID=$(klay --detach start streams \
---from='orders' \
---to='paid' \
---application-id='demo-join' \
+--application-id='demo-no-from' \
 --bootstrap-servers=$BOOTSTRAP_SERVER \
-./join.java | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
+./noFrom.java | grep 'Klay ID' | cut -d':' -f 2 | cut -d' ' -f 2)
 
 read -rsn1 -p"Press any key to produce test data";echo
 
@@ -50,7 +38,7 @@ read -rsn1 -p"Press any key to start a console consumer and see the results";ech
 klay kafka-cli consumer \
 --bootstrap-server $BOOTSTRAP_SERVER \
 --from-beginning  \
---topic paid \
+--topic 'payments-copy' \
 --property print.partition=true \
 --property print.offset=true \
 --property print.headers=true \

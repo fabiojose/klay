@@ -82,7 +82,7 @@ jreleaser {
             owner = 'fabiojose'
             overwrite = true
             changelog {
-              formated = 'ALWAYS'
+              formatted = 'ALWAYS'
               preset = 'conventional-commits'
               format = '- {{commitShortHash}} {{commitTitle}}'
             }

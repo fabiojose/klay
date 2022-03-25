@@ -1,11 +1,11 @@
 package com.github.fabiojose.klay.streams;
 
+import com.github.fabiojose.klay.core.GroovyExecutor;
+import com.github.fabiojose.klay.core.JavaExecutor;
 import com.github.fabiojose.klay.util.Compiler;
 import com.github.fabiojose.klay.util.FileWatcher;
-import com.github.fabiojose.klay.util.MetadataWriter;
 import com.github.fabiojose.klay.util.FileWatcher.FileWatchEvent;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
+import com.github.fabiojose.klay.util.MetadataWriter;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import java.io.File;
@@ -24,8 +24,6 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KStream;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -35,20 +33,19 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class TopologyBuilder {
 
-  private static final Logger log = LoggerFactory.getLogger(TopologyBuilder.class);
+  private static final Logger log = LoggerFactory.getLogger(
+    TopologyBuilder.class
+  );
 
-  private static final String NO_VALUE = "##__NO-VALUE__##";
-  private static final String STREAM_PROPERTY = "stream";
-  private static final String BUILDER_PROPERTY = "builder";
   private static final String PROPERTY_PREFIX = "kafka-streams.";
 
-  @ConfigProperty(name = "klay.stream.from.topic", defaultValue = NO_VALUE)
-  String from;
+  @ConfigProperty(name = "klay.stream.from.topic")
+  Optional<String> from;
 
-  @ConfigProperty(name = "klay.stream.to.topic", defaultValue = NO_VALUE)
-  String to;
+  @ConfigProperty(name = "klay.stream.to.topic")
+  Optional<String> to;
 
-  @ConfigProperty(name = "klay.stream.script", defaultValue = NO_VALUE)
+  @ConfigProperty(name = "klay.stream.script")
   File file;
 
   @ConfigProperty(name = "klay.stream.live", defaultValue = "false")
@@ -62,13 +59,17 @@ public class TopologyBuilder {
   @Inject
   ManagedExecutor executor;
 
+  private GroovyExecutor groovy;
+  private JavaExecutor java;
+
   private KafkaStreams streams;
 
   private boolean metadataGenerated;
 
   private void writeMetadata() {
-    if(!this.metadataGenerated) {
+    if (!this.metadataGenerated) {
       var writer = MetadataWriter.of(this.externalId);
+
       writer.type("streams");
       writer.version("3.1.0");
 
@@ -76,57 +77,35 @@ public class TopologyBuilder {
     }
   }
 
-  @SuppressWarnings("rawtypes")
-  private Optional<KStream> executeGroovyScript(
-    final StreamsBuilder builder,
-    final KStream<?, ?> stream,
-    final File file
-  ) {
-    final var imports = new ImportCustomizer();
-    imports.addStarImports(
-      "org.apache.kafka.streams",
-      "org.apache.kafka.streams.kstream",
-      "org.apache.kafka.streams.state"
-    );
-
-    final var config = new CompilerConfiguration();
-    config.addCompilationCustomizers(imports);
-
-    final var binding = new Binding();
-    binding.setProperty(BUILDER_PROPERTY, builder);
-    binding.setProperty(STREAM_PROPERTY, stream);
-
-    final var groovy = new GroovyShell(binding, config);
-
-    try {
-      final var script = groovy.parse(file);
-      final var result = script.run();
-
-      if (!NO_VALUE.equals(to)) {
-        if (result instanceof KStream) {
-          return Optional.of((KStream) result);
-        } else {
-          log.warn("The groovy script return is invalid: {}", result);
-          throw new IllegalStateException(
-            "Your script must return an instance of KStream, not " + result
-          );
-        }
-      }
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+  private GroovyExecutor getGroovyExecutor() {
+    if (null == this.groovy) {
+      this.groovy = new GroovyExecutor();
     }
 
-    return Optional.empty();
+    return this.groovy;
   }
 
-  private Compiler javaCompiler;
+  @SuppressWarnings("rawtypes")
+  private Optional<KStream> executeGroovyScript(
+    final KStream<?, ?> fromStream,
+    final StreamsBuilder builder,
+    final File file
+  ) {
+    return getGroovyExecutor()
+      .execute(
+        fromStream,
+        builder,
+        file.toPath(),
+        this.to.orElseGet(() -> null)
+      );
+  }
 
-  private Compiler getJavaCompiler() {
-    if (null == javaCompiler) {
-      this.javaCompiler = Compiler.getInstance();
+  private JavaExecutor getJavaExecutor() {
+    if (null == this.java) {
+      this.java = new JavaExecutor();
     }
 
-    return this.javaCompiler;
+    return this.java;
   }
 
   @SuppressWarnings("rawtypes")
@@ -135,20 +114,13 @@ public class TopologyBuilder {
     StreamsBuilder builder,
     File topologyFile
   ) {
-    var topology = getJavaCompiler().compileAndCreateInstance(topologyFile);
-
-    var result = topology.build(fromStream, builder);
-    if (!NO_VALUE.equals(to)) {
-      if (null != result) {
-        return Optional.of(result);
-      } else {
-        throw new IllegalStateException(
-          "Your script must return an instance of KStream"
-        );
-      }
-    }
-
-    return Optional.empty();
+    return getJavaExecutor()
+      .execute(
+        fromStream,
+        builder,
+        file.toPath(),
+        this.to.orElseGet(() -> null)
+      );
   }
 
   @SuppressWarnings("rawtypes")
@@ -157,15 +129,10 @@ public class TopologyBuilder {
     StreamsBuilder builder,
     File topology
   ) {
-
     if (topology.getName().toLowerCase().endsWith(".groovy")) {
-
-      return executeGroovyScript(builder, fromStream, topology);
-
+      return executeGroovyScript(fromStream, builder, topology);
     } else if (topology.getName().toLowerCase().endsWith(".java")) {
-
       return executeJava(fromStream, builder, topology);
-
     } else {
       throw new IllegalArgumentException(
         "Unsupported file type: " + topology.getName()
@@ -177,13 +144,15 @@ public class TopologyBuilder {
   private Topology build() {
     final var builder = new StreamsBuilder();
 
-    KStream fromStream = null;
-    if(!NO_VALUE.equals(from)){
-      fromStream = builder.stream(from);
-    }
+    KStream fromStream = from.map(builder::stream).orElseGet(() -> null);
 
     final var resultStream = buildTopology(fromStream, builder, file);
-    resultStream.ifPresent(ks -> ks.to(to));
+
+    resultStream.ifPresent(
+      sink -> {
+        to.ifPresent(sink::to);
+      }
+    );
 
     return builder.build();
   }

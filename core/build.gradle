@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+
+    // stay
+    implementation('org.jooq:joor:0.9.13'){
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+      exclude group: 'log4j', module: 'log4j'
+    }
+
+    implementation 'org.apache.groovy:groovy:4.0.0'
+
+    compileOnly 'io.quarkus:quarkus-kafka-streams'
+
+}
+
+description 'Has classes used by klay-cli and exported applictions'

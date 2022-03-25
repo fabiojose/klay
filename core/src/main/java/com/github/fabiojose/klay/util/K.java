@@ -1,4 +1,5 @@
 package com.github.fabiojose.klay.util;
+
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 

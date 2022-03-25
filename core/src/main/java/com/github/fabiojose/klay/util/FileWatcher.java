@@ -11,11 +11,13 @@ import java.nio.file.WatchService;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import org.jboss.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileWatcher implements Runnable {
 
-  private static final Logger log = Logger.getLogger(FileWatcher.class);
+  private static final Logger log = LoggerFactory.getLogger(FileWatcher.class);
 
   private final File fileToWatch;
   private final Consumer<FileWatchEvent> callback;
@@ -36,7 +38,7 @@ public class FileWatcher implements Runnable {
         watcher,
         StandardWatchEventKinds.ENTRY_MODIFY
       );
-      log.infof("Live reload started for %s", fileToWatch);
+      log.info("Live reload started for {}", fileToWatch);
     }
   }
 
@@ -49,7 +51,7 @@ public class FileWatcher implements Runnable {
 
     changed.ifPresent(
       event -> {
-        log.infof("File changed %s, reload started", event.context());
+        log.info("File changed {}, reload started", event.context());
         callback.accept(new FileWatchEvent((Path)event.context(), event));
       }
     );
@@ -64,7 +66,7 @@ public class FileWatcher implements Runnable {
         processEvent(watch.pollEvents());
         watch.reset();
       }
-      log.infof("No more changes to watch for file %s", fileToWatch);
+      log.info("No more changes to watch for file {}", fileToWatch);
     } catch (IOException e) {
       log.error(e.getMessage(), e);
     } catch (InterruptedException e) {

@@ -2,7 +2,7 @@ package com.github.fabiojose.klay.rest;
 
 import com.github.fabiojose.klay.rest.model.KeyMetadata;
 import com.github.fabiojose.klay.rest.model.StreamMetadata;
-import com.github.fabiojose.klay.streams.TopologyBuilder;
+import com.github.fabiojose.klay.streams.StreamsExecutor;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ import org.apache.kafka.streams.KeyQueryMetadata;
 public class StreamsMetadataResource {
 
   @Inject
-  TopologyBuilder streams;
+  StreamsExecutor streams;
 
   @GET
   @Path("/all")

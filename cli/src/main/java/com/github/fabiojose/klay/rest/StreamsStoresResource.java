@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.github.fabiojose.klay.streams.TopologyBuilder;
+import com.github.fabiojose.klay.streams.StreamsExecutor;
 
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
@@ -20,7 +20,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 public class StreamsStoresResource {
 
   @Inject
-  TopologyBuilder streams;
+  StreamsExecutor streams;
 
   @GET
   @Path("/{storeName}/keys/{key}")

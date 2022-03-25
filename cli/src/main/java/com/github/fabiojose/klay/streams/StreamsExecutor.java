@@ -1,7 +1,6 @@
 package com.github.fabiojose.klay.streams;
 
-import com.github.fabiojose.klay.core.GroovyExecutor;
-import com.github.fabiojose.klay.core.JavaExecutor;
+import com.github.fabiojose.klay.core.TopologyBuilder;
 import com.github.fabiojose.klay.util.Compiler;
 import com.github.fabiojose.klay.util.FileWatcher;
 import com.github.fabiojose.klay.util.FileWatcher.FileWatchEvent;
@@ -31,10 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class TopologyBuilder {
+public class StreamsExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(
-    TopologyBuilder.class
+    StreamsExecutor.class
   );
 
   private static final String PROPERTY_PREFIX = "kafka-streams.";
@@ -59,8 +58,7 @@ public class TopologyBuilder {
   @Inject
   ManagedExecutor executor;
 
-  private GroovyExecutor groovy;
-  private JavaExecutor java;
+  private TopologyBuilder topologyBuilder;
 
   private KafkaStreams streams;
 
@@ -77,84 +75,20 @@ public class TopologyBuilder {
     }
   }
 
-  private GroovyExecutor getGroovyExecutor() {
-    if (null == this.groovy) {
-      this.groovy = new GroovyExecutor();
+  private TopologyBuilder getTopologyBuilder() {
+    if (null == this.topologyBuilder) {
+      this.topologyBuilder =
+        new TopologyBuilder(
+          this.from.orElseGet(() -> null),
+          this.to.orElseGet(() -> null)
+        );
     }
 
-    return this.groovy;
+    return this.topologyBuilder;
   }
 
-  @SuppressWarnings("rawtypes")
-  private Optional<KStream> executeGroovyScript(
-    final KStream<?, ?> fromStream,
-    final StreamsBuilder builder,
-    final File file
-  ) {
-    return getGroovyExecutor()
-      .execute(
-        fromStream,
-        builder,
-        file.toPath(),
-        this.to.orElseGet(() -> null)
-      );
-  }
-
-  private JavaExecutor getJavaExecutor() {
-    if (null == this.java) {
-      this.java = new JavaExecutor();
-    }
-
-    return this.java;
-  }
-
-  @SuppressWarnings("rawtypes")
-  private Optional<KStream> executeJava(
-    final KStream fromStream,
-    StreamsBuilder builder,
-    File topologyFile
-  ) {
-    return getJavaExecutor()
-      .execute(
-        fromStream,
-        builder,
-        file.toPath(),
-        this.to.orElseGet(() -> null)
-      );
-  }
-
-  @SuppressWarnings("rawtypes")
-  private Optional<KStream> buildTopology(
-    final KStream fromStream,
-    StreamsBuilder builder,
-    File topology
-  ) {
-    if (topology.getName().toLowerCase().endsWith(".groovy")) {
-      return executeGroovyScript(fromStream, builder, topology);
-    } else if (topology.getName().toLowerCase().endsWith(".java")) {
-      return executeJava(fromStream, builder, topology);
-    } else {
-      throw new IllegalArgumentException(
-        "Unsupported file type: " + topology.getName()
-      );
-    }
-  }
-
-  @SuppressWarnings("rawtypes")
   private Topology build() {
-    final var builder = new StreamsBuilder();
-
-    KStream fromStream = from.map(builder::stream).orElseGet(() -> null);
-
-    final var resultStream = buildTopology(fromStream, builder, file);
-
-    resultStream.ifPresent(
-      sink -> {
-        to.ifPresent(sink::to);
-      }
-    );
-
-    return builder.build();
+    return getTopologyBuilder().topologyOf(file.toPath());
   }
 
   private void configureLiveReload() {

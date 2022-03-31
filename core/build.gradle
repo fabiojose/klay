@@ -1,27 +1,123 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
+description 'Klay Core'
 
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
 
-    testImplementation 'io.quarkus:quarkus-junit5'
+    implementation 'org.apache.groovy:groovy:4.0.0'
 
-    // stay
     implementation('org.jooq:joor:0.9.13'){
       exclude group: 'org.slf4j', module: 'slf4j-log4j12'
       exclude group: 'log4j', module: 'log4j'
     }
 
-    implementation 'org.apache.groovy:groovy:4.0.0'
-
     compileOnly 'io.quarkus:quarkus-kafka-streams'
 
+    testImplementation 'io.quarkus:quarkus-junit5'
 }
 
-description 'Has classes used by klay-cli and exported applictions'
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'klay-core'
+            version = project.version
+
+            from components.java
+
+            pom {
+                name = 'Klay Core'
+                packaging = 'jar'
+                description = 'Core classes used by klay-cli and exported applications'
+                url = 'https://github.com/fabiojose/klay'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'fabiojose'
+                        name = 'Fábio José'
+                        email = 'fabiojose@gmail.com.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/fabiojose/klay.git'
+                    developerConnection = 'scm:git:https://github.com/fabiojose/klay.git'
+                    url = 'https://github.com/fabiojose/klay'
+                }
+            }
+        }
+    }
+    repositories {
+      maven {
+        name 'OSSRH'
+        url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+        credentials {
+          username = ossrhUsername
+          password = ossrhPassword
+        }
+      }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+/*
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Klay Core'
+        packaging 'jar'
+        description 'Core classes used by klay-cli and exported applications'
+        url 'https://github.com/fabiojose/klay'
+
+        scm {
+          connection 'scm:git:https://github.com/fabiojose/klay.git'
+          developerConnection 'scm:git:https://github.com/fabiojose/klay.git'
+          url 'https://github.com/fabiojose/klay'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'fabiojose'
+            name 'Fábio J. Moraes'
+            email 'fabiojose@gmail.com'
+          }
+        }
+      }
+    }
+  }
+}
+*/

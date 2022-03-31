@@ -1,12 +1,6 @@
 plugins {
-    //id 'java'
     id 'io.quarkus'
     id 'org.jreleaser' version '1.0.0-M3'
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
@@ -17,8 +11,6 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
     implementation 'io.quarkus:quarkus-smallrye-health'
-
-    //implementation 'org.apache.groovy:groovy:4.0.0'
 
     implementation('org.apache.kafka:kafka_2.12:3.1.0'){
       exclude group: 'org.slf4j', module: 'slf4j-log4j12'
@@ -31,8 +23,6 @@ dependencies {
       exclude group: 'log4j', module: 'log4j'
     }
 
-    //implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
-    //implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
     implementation 'ch.qos.logback:logback-classic:1.2.11'
     implementation('org.jooq:joor:0.9.13'){
       exclude group: 'org.slf4j', module: 'slf4j-log4j12'

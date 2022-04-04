@@ -1,6 +1,6 @@
 subprojects {
 
-  group 'com.github.fabiojose.klay'
+  group 'io.github.fabiojose.klay'
   version '0.45.0'
 
   apply plugin: 'java'

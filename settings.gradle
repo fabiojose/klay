@@ -9,3 +9,6 @@ pluginManagement {
     }
 }
 rootProject.name='klay'
+
+include 'core'
+include 'cli'

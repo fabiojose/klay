@@ -1,0 +1,119 @@
+plugins {
+    id 'io.quarkus'
+    id 'org.jreleaser' version '1.0.0-M3'
+}
+
+dependencies {
+    implementation project(':core')
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-kafka-streams'
+    implementation 'io.quarkus:quarkus-jsonb'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-smallrye-health'
+
+    implementation('org.apache.kafka:kafka_2.12:3.1.0'){
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+      exclude group: 'log4j', module: 'log4j'
+      exclude group: 'zookeeper', module: '*'
+    }
+
+    implementation('org.apache.zookeeper:zookeeper:3.8.0'){
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+      exclude group: 'log4j', module: 'log4j'
+    }
+
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation('org.jooq:joor:0.9.13'){
+      exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+      exclude group: 'log4j', module: 'log4j'
+    }
+
+    implementation 'info.picocli:picocli:4.6.3'
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+}
+
+description 'Klay CLI'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+jar {
+  archiveFileName = 'klay.jar'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+jreleaser {
+    project {
+        name = 'klay'
+        website = 'https://github.com/fabiojose/klay'
+        authors = ['fabiojose@gmail.com']
+        license = 'Apache-2.0'
+        extraProperties.put('inceptionYear', '2022')
+        description = 'Play with Apache Kafka®'
+        longDescription = 'Play with Apache Kafka®. Good for proof-of-concept, labs, fast development and study.'
+    }
+
+    release {
+        github {
+            username = 'fabiojose'
+            owner = 'fabiojose'
+            overwrite = true
+            changelog {
+              formatted = 'ALWAYS'
+              preset = 'conventional-commits'
+              format = '- {{commitShortHash}} {{commitTitle}}'
+            }
+        }
+    }
+
+    assemble {
+      archive {
+        klay {
+          active = 'ALWAYS'
+          distributionType = 'JAVA_BINARY'
+
+          formats = [
+            org.jreleaser.model.Archive$Format.TGZ
+          ]
+
+          fileSet {
+            input = '.'
+            includes = ['LICENSE', 'README.md']
+          }
+
+          fileSet {
+            input = 'src/scripts'
+            includes = ['*']
+            output = 'bin'
+          }
+
+          fileSet {
+            input = 'build'
+            includes = ['*.jar']
+            output = 'lib'
+          }
+        }
+      }
+    }
+
+    distributions {
+        klay {
+           artifact {
+               path = 'build/jreleaser/assemble/klay/archive/{{distributionName}}-{{projectVersion}}.tgz'
+           }
+        }
+    }
+}

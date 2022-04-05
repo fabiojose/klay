@@ -56,6 +56,7 @@ compileTestJava {
 }
 
 jreleaser {
+    gitRootSearch = true
     project {
         name = 'klay'
         website = 'https://github.com/fabiojose/klay'

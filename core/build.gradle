@@ -53,7 +53,7 @@ publishing {
                     developer {
                         id = 'fabiojose'
                         name = 'Fábio José'
-                        email = 'fabiojose@gmail.com.com'
+                        email = 'fabiojose@gmail.com'
                     }
                 }
                 scm {

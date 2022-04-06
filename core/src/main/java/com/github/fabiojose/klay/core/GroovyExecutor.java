@@ -24,7 +24,6 @@ public class GroovyExecutor {
   );
 
   static final String STREAM_PROPERTY = "stream";
-  static final String FROM_STREAM_PROPERTY = "fromStream";
   static final String BUILDER_PROPERTY = "builder";
 
   /**

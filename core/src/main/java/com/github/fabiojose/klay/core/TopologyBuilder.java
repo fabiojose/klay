@@ -1,6 +1,8 @@
 package com.github.fabiojose.klay.core;
 
-import groovy.cli.Option;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -62,12 +64,61 @@ public class TopologyBuilder {
     }
   }
 
+  private Optional<KStream> buildTopology(
+    final KStream fromStream,
+    final StreamsBuilder builder,
+    final String source,
+    final StreamSourceType sourceType
+  ) {
+    if (StreamSourceType.GROOVY.equals(sourceType)) {
+      return getGroovyExecutor()
+        .execute(fromStream, builder, source, this.to.orElseGet(() -> null));
+    } else if (StreamSourceType.JAVA.equals(sourceType)) {
+      return getJavaExecutor()
+        .execute(fromStream, builder, source, this.to.orElseGet(() -> null));
+    } else {
+      throw new IllegalArgumentException("sourceType: " + sourceType);
+    }
+
+  }
+
   public Topology topologyOf(Path source) {
     final var builder = new StreamsBuilder();
 
     KStream fromStream = from.map(builder::stream).orElseGet(() -> null);
 
     final var resultStream = buildTopology(fromStream, builder, source);
+
+    resultStream.ifPresent(
+      sink -> {
+        to.ifPresent(sink::to);
+      }
+    );
+
+    return builder.build();
+  }
+
+  public Topology topologyOf(
+    final InputStream source,
+    StreamSourceType sourceType
+  ) {
+    try {
+      return topologyOf(new String(source.readAllBytes(), "UTF-8"), sourceType);
+    }catch(IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  public Topology topologyOf(final String source, StreamSourceType sourceType) {
+    final var builder = new StreamsBuilder();
+    final KStream fromStream = from.map(builder::stream).orElseGet(() -> null);
+
+    final var resultStream = buildTopology(
+      fromStream,
+      builder,
+      source,
+      sourceType
+    );
 
     resultStream.ifPresent(
       sink -> {

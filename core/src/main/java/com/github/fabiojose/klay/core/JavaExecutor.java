@@ -1,12 +1,13 @@
 package com.github.fabiojose.klay.core;
 
 import com.github.fabiojose.klay.util.Compiler;
-import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.internals.KStreamPrint;
 
 /**
  * Executes the Java source to build the Kafka Streams Topology.
@@ -26,16 +27,16 @@ public class JavaExecutor {
   /**
    * @param fromStream Source stream, that should be {@code null}
    * @param builder Kafka Streams builder
-   * @param source Groovy source file
+   * @param source Groovy source string
    * @return {@link Optional#empty()} when there is no Sink stream
    */
   public Optional<KStream> execute(
     KStream fromStream,
     StreamsBuilder builder,
-    Path source,
+    String source,
     String sinkTopic
   ) {
-    var topology = getJavaCompiler().compileAndCreateInstance(source.toFile());
+    var topology = getJavaCompiler().compileAndCreateInstance(source);
 
     var result = topology.build(fromStream, builder);
     if (null != sinkTopic) {
@@ -49,5 +50,27 @@ public class JavaExecutor {
     }
 
     return Optional.empty();
+  }
+
+
+  /**
+   * @param fromStream Source stream, that should be {@code null}
+   * @param builder Kafka Streams builder
+   * @param source Groovy source file
+   * @return {@link Optional#empty()} when there is no Sink stream
+   */
+  public Optional<KStream> execute(
+    KStream fromStream,
+    StreamsBuilder builder,
+    Path source,
+    String sinkTopic
+  ) {
+
+    try {
+      var sourceString = Files.readString(source);
+      return execute(fromStream, builder, sourceString, sinkTopic);
+    }catch(IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }

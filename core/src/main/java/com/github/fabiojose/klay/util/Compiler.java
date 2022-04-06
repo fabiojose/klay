@@ -3,15 +3,7 @@ package com.github.fabiojose.klay.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,19 +29,16 @@ public final class Compiler {
     return new Compiler();
   }
 
-  public K compileAndCreateInstance(final File sourceFile) {
+  public K compileAndCreateInstance(final String source) {
 
     try {
-      final var originalSource = Files.readString(sourceFile.toPath());
-      log.debug("original java source {}", originalSource);
+      log.debug("original java source {}", source);
 
-      var source = "import " + K.class.getCanonicalName() + ";" + originalSource;
-      log.debug("source to be compiled {}", source);
+      var modifiedSource = "import " + K.class.getCanonicalName() + ";" + source;
+      log.debug("source to be compiled {}", modifiedSource);
 
-      return Reflect.compile("t", source).create().get();
+      return Reflect.compile("t", modifiedSource).create().get();
 
-    }catch(IOException e) {
-      throw new UncheckedIOException(e);
     }catch(NullPointerException e) {
       log.error(e.getLocalizedMessage(), e);
       if(e.getMessage().endsWith("\"org.joor.Reflect.type()\" is null")){
@@ -59,6 +48,17 @@ public final class Compiler {
         throw e;
       }
     }
+  }
+
+  public K compileAndCreateInstance(final File source) {
+
+    try {
+      final var sourceString = Files.readString(source.toPath());
+      return compileAndCreateInstance(sourceString);
+    }catch(IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
   }
 
   public static class CompilerException extends RuntimeException {

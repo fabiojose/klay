@@ -4,8 +4,11 @@ placeholders:
   strict: yes
   spec:
     - name: __topics_
-      pattern: "([a-zA-Z\\-_\\.0-9]{0,255})(,[a-zA-Z\\-_\\.0-9]{0,255})*"
+      pattern: "([a-zA-Z\-_\.0-9]{0,255})(,[a-zA-Z\-_\.0-9]{0,255})*"
       label: A comma delimited list of topics used by your topology
+    - name: __klay_version_
+      pattern: "[0-9]\.[0-9]\.[0-9]"
+      label: Klay Core version
 post:
   script:
     linux:

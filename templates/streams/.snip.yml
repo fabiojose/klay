@@ -1,0 +1,14 @@
+description: |
+  Klay topology runner
+placeholders:
+  strict: yes
+  spec:
+    - name: __topics_
+      pattern: "([a-zA-Z\\-_\\.0-9]{0,255})(,[a-zA-Z\\-_\\.0-9]{0,255})*"
+      label: A comma delimited list of topics used by your topology
+post:
+  script:
+    linux:
+      - ./gradlew clean build -Dquarkus.package.type=uber-jar
+    windows:
+      - gradlew.bat clean build -Dquarkus.package.type=uber-jar

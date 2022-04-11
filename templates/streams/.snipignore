@@ -1,0 +1,16 @@
+.gradle/
+.mvn/
+gradle/
+.vscode/
+bin/
+build/
+target/
+
+gradlew
+gradlew.bat
+mvnw
+mvnw.cmd
+lombok.config
+.editorconfig
+.gitignore
+.dockerignore

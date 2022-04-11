@@ -29,6 +29,8 @@ dependencies {
       exclude group: 'log4j', module: 'log4j'
     }
 
+    implementation 'io.github.fabiojose.snip:snip-core:1.0.0'
+
     implementation 'info.picocli:picocli:4.6.3'
     annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
 
@@ -105,6 +107,11 @@ jreleaser {
             input = 'build'
             includes = ['*.jar']
             output = 'lib'
+          }
+
+          fileSet {
+            input = '../templates/streams'
+            output = 'templates/streams'
           }
         }
       }
